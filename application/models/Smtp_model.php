@@ -26,5 +26,11 @@ class Smtp_model extends CI_Model
     {
         $this->db->where('id', $id)->update('smtp_credentials', $data);
     }
+    public function update_smtp($id, $data)
+    {
+        $this->db->where('id', $id);
+        return $this->db->update('smtp_credentials', $data);
+    }
+
 }
 ?>

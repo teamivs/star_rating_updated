@@ -44,7 +44,7 @@
 
         <div class="card p-4">
             <h4 class="fw-bold text-center mb-4">Edit Company Profile</h4>
-            <?= form_open_multipart() ?>
+<form action="<?= base_url('index.php/company/edit') ?>" method="post" enctype="multipart/form-data">
             <div class="mb-3">
                 <label class="form-label">Company Name</label>
                 <input type="text" name="company_name" class="form-control" required
@@ -64,6 +64,7 @@
             </div>
             <button type="submit" class="btn btn-success">Save</button>
             <?= form_close() ?>
+                </form>
         </div>
     </div>
 </body>

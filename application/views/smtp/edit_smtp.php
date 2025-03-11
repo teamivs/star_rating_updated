@@ -43,9 +43,9 @@
     <div class="content-wrapper">
         <div class="main-content">
             <div class="container">
-                <h4 class="fw-bold text-center mb-4">Edit SMTP Credentials</h4>
+            
 
-                <div class="card">
+                <div class="card">    <h4 class="fw-bold text-center mb-4">Edit SMTP Credentials</h4>
                     <form action="" method="post">
                         <div class="form-group">
                             <label for="smtp_host">SMTP Host</label>

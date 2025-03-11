@@ -8,7 +8,6 @@
         top: 0;
         left: 0;
         overflow-y: auto;
-        /* border-right: 1px solid #ddd; */
     }
 
     .sidebar .nav-link {
@@ -28,14 +27,11 @@
     .sidebar .nav-link.active {
         background-color: #0d6efd;
         color: white;
-        /* font-weight: bold; */
     }
 
     .sidebar .dashboard-header {
         padding: 10px 15px;
         font-size: 12px;
-        /* font-weight: bold; */
-        /* background-color: #0d6efd; */
         color: white;
         display: flex;
         align-items: center;
@@ -46,41 +42,43 @@
     }
 </style>
 
+<?php
+$segment2 = $this->uri->segment(2); // Controller
+$segment3 = $this->uri->segment(3); // Method
+?>
+
 <div class="sidebar">
-    <!-- Dashboard Header -->
-    <div class="dashboard-header">
-
-    </div>
-
-
-
     <ul class="nav nav-pills flex-column mb-auto">
+        <li>
+            <a href="<?php echo base_url('index.php/reviews/dashboard'); ?>"
+                class="nav-link <?php echo ($segment2 == 'reviews' && $segment3 == 'dashboard') ? 'active' : ''; ?>">
+                <i class="bi bi-bar-chart me-2"></i> Dashboard
+            </a>
+        </li>
         <li class="nav-item">
             <a href="<?php echo base_url('index.php/users'); ?>"
-                class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'show_user.php' ? 'active' : ''; ?>">
+                class="nav-link <?php echo ($segment2 == 'users') ? 'active' : ''; ?>">
                 <i class="bi bi-person-plus me-2"></i> Show User
             </a>
         </li>
         <li>
             <a href="<?php echo base_url('index.php/company/profile'); ?>"
-                class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'profile.php' ? 'active' : ''; ?>">
+                class="nav-link <?php echo ($segment2 == 'company' && $segment3 == 'profile') ? 'active' : ''; ?>">
                 <i class="bi bi-building me-2"></i> Company Profile
             </a>
         </li>
         <li>
-            <a href="<?php echo base_url('index.php/smtp/index'); ?>""
-                class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'smtp_credentials.php' ? 'active' : ''; ?>">
+            <a href="<?php echo base_url('index.php/smtp/index'); ?>"
+                class="nav-link <?php echo ($segment2 == 'smtp') ? 'active' : ''; ?>">
                 <i class="bi bi-envelope me-2"></i> Email Credentials
             </a>
         </li>
         <li>
             <a href="<?php echo base_url('index.php/reviews'); ?>"
-                class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'show_reviews.php' ? 'active' : ''; ?>">
-                <i class="icon-grid menu-icon me-2"></i>
-                Comments
+                class="nav-link <?php echo ($segment2 == 'reviews' && $segment3 != 'dashboard') ? 'active' : ''; ?>">
+                <i class="icon-grid menu-icon me-2"></i> Comments
             </a>
         </li>
-
-
+        
     </ul>
 </div>

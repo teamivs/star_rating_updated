@@ -61,9 +61,10 @@ class Smtp extends CI_Controller
                 // Otherwise, update the existing credentials
                 if ($this->Smtp_model->update_smtp($id, $smtp_data)) {
                     $this->session->set_flashdata('success', 'SMTP credentials updated successfully!');
-                    redirect('smtp'); // Redirect to the list or home
+                    redirect('index.php/smtp'); // Redirect to the list or home
                 } else {
                     $this->session->set_flashdata('error', 'Failed to update SMTP credentials.');
+                    redirect('index.php/smtp');
                 }
             }
         }

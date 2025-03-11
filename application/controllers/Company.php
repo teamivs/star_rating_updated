@@ -22,7 +22,6 @@ class Company extends CI_Controller
 
     public function edit()
     {
-        echo ('hello');
         $data['company'] = $this->Company_model->get_company();
 
         if ($this->input->post()) {
@@ -35,8 +34,19 @@ class Company extends CI_Controller
                 redirect('index.php/company/edit');
             }
 
+            // Ensure the upload directory exists
+            $upload_path = FCPATH . 'uploads/';
+            if (!is_dir($upload_path)) {
+                mkdir($upload_path, 0755, true);
+            }
+
+            // Ensure directory is writable
+            if (!is_writable($upload_path)) {
+                chmod($upload_path, 0755);
+            }
+
             // File Upload Configuration
-            $config['upload_path'] = './uploads/';
+            $config['upload_path'] = $upload_path;
             $config['allowed_types'] = 'jpg|jpeg|png|gif';
             $this->upload->initialize($config);
 
@@ -46,7 +56,7 @@ class Company extends CI_Controller
                     $logo = 'uploads/' . $this->upload->data('file_name');
                 } else {
                     $this->session->set_flashdata('error', $this->upload->display_errors());
-                    redirect('company/edit');
+                    redirect('index.php/company/edit');
                 }
             } else {
                 $logo = $data['company']['company_logo'] ?? '';
@@ -71,4 +81,5 @@ class Company extends CI_Controller
 
         $this->load->view('company/edit', $data);
     }
+
 }
