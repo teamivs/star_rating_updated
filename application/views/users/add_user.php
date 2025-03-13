@@ -16,11 +16,11 @@
         }
 
         .content-wrapper {
-            margin-left: 250px;
-            width: calc(100% - 250px);
+            margin-left: 20%;
+            width: calc(100% - 20%);
             display: flex;
             flex-direction: column;
-            min-height: 100vh;
+            /* min-height: 100vh; */
         }
 
         .main-content {
@@ -30,19 +30,25 @@
         }
 
         .form-container {
-            max-width: 500px;
+            width:50%;
+            /* max-width: 500px; */
             background: white;
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
+         @media (max-width: 768px) {
+              .content-wrapper {
+                margin-left: 10%;
+                margin-top: 25px;
+            }}
     </style>
 </head>
 
 <body>
 
     <?php $this->load->view('components/sidebar'); ?>
-    <?php $this->load->view('components/navbar'); ?>
+    <!-- <?php $this->load->view('components/navbar'); ?> -->
 
     <div class="content-wrapper">
         <div class="main-content d-flex align-items-center justify-content-center">
@@ -57,7 +63,7 @@
                     <div class="alert alert-success"><?php echo $this->session->flashdata('success'); ?></div>
                 <?php } ?>
 
-                <form method="POST" action="<?php echo base_url('index.php/users/add'); ?>">
+                <form method="POST" action="<?php echo base_url('users/add'); ?>">
                     <div class="mb-3">
                         <label for="username" class="form-label">Username</label>
                         <input type="text" class="form-control" id="username" name="username" required>

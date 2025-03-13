@@ -18,10 +18,10 @@
 
             .content-wrapper {
                 margin-left: 250px;
-                width: calc(100% - 250px);
                 display: flex;
                 flex-direction: column;
                 min-height: 100vh;
+                transition: all 0.3s ease-in-out;
             }
 
             .main-content {
@@ -52,8 +52,6 @@
                 font-weight: 500;
             }
 
-
-
             .btn-create {
                 background-color: #007bff;
                 color: #fff;
@@ -78,56 +76,110 @@
             .info-item a {
                 color: #007bff;
                 text-decoration: none;
+                word-break: break-word;
             }
 
             .info-item a:hover {
                 text-decoration: underline;
             }
+
+            @media (max-width: 768px) {
+                .content-wrapper {
+                    margin-left: 0;
+                    width: 100%;
+                }
+
+                .main-content {
+                    padding: 20px;
+                }
+
+                .card {
+                    padding: 20px;
+                }
+            }
         </style>
     </head>
 
     <body>
-        <?php $this->load->view('components/sidebar'); ?>
+        <div class="container-scroller">
 
-        <div class="content-wrapper">
-            <div class="main-content">
-                <div class="container">
-                    <div class="card">
-                        <h4 class="text-center">Company Profile</h4>
-                        <?php if ($company): ?>
-                            <div class="text-center mb-4">
-                                <?php if (!empty($company['company_logo'])): ?>
-                                    <img src="<?= base_url($company['company_logo']) ?>" alt="Company Logo"
-                                        class="company-logo">
-                                <?php else: ?>
-                                    <img src="https://via.placeholder.com/120" alt="No Logo" class="company-logo">
-                                <?php endif; ?>
+            <?php $this->load->view('components/navbar'); ?>
+            <!-- partial -->
+            <div class="container-fluid page-body-wrapper">
+
+                <?php $this->load->view('components/sidebar') ?>
+
+                <div class="content-wrapper" id="contentWrapper">
+                    <div class="main-content">
+                        <div class="container">
+                            <div class="row justify-content-center">
+                                <div class="col-12 col-md-10 col-lg-8">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h4 class="text-center">Company Profile</h4>
+                                            <?php if ($company): ?>
+                                                <div class="text-center mb-4">
+                                                    <?php if (!empty($company['company_logo'])): ?>
+                                                        <img src="<?= base_url($company['company_logo']) ?>" alt="Company Logo"
+                                                            class="company-logo">
+                                                    <?php else: ?>
+                                                        <img src="https://via.placeholder.com/120" alt="No Logo"
+                                                            class="company-logo">
+                                                    <?php endif; ?>
+                                                </div>
+                                                <div class="info-item">
+                                                    <strong>Company Name:</strong>
+                                                    <?= htmlspecialchars($company['company_name']) ?>
+                                                </div>
+                                                <div class="info-item">
+                                                    <strong>Company URL:</strong> <a
+                                                        href="<?= htmlspecialchars($company['company_url']) ?>"
+                                                        target="_blank">
+                                                        <?= htmlspecialchars($company['company_url']) ?></a>
+                                                </div>
+                                                <a
+                                                    href="<?= base_url('reviews/form?name=' . urlencode($company['company_name']) . '&logo=' . urlencode(base_url($company['company_logo'])) . '&url=' . urlencode($company['company_url'])) ?>">Leave
+                                                    a Review</a>
+
+                                                <div class="text-end mt-4">
+                                                    <a href="<?= base_url('company/edit') ?>"
+                                                        class="btn btn-primary btn-custom btn-edit"><i
+                                                            class="fas fa-edit"></i> Edit</a>
+                                                </div>
+                                            <?php else: ?>
+                                                <p class="text-center">No company details found.</p>
+                                                <div class="text-center mt-4">
+                                                    <a href="<?= base_url('company/edit') ?>"
+                                                        class="btn btn-custom btn-create"><i class="fas fa-plus"></i> Create
+                                                        Profile</a>
+                                                </div>
+                                            <?php endif; ?>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="info-item">
-                                <strong>Company Name:</strong> <?= htmlspecialchars($company['company_name']) ?>
-                            </div>
-                            <div class="info-item">
-                                <strong>Company URL:</strong> <a href="<?= htmlspecialchars($company['company_url']) ?>"
-                                    target="_blank">
-                                    <?= htmlspecialchars($company['company_url']) ?></a>
-                            </div>
-                            <div class="text-end mt-4">
-                                <a href="<?= base_url('index.php/company/edit') ?>" class="btn btn-primary btn-custom btn-edit"><i
-                                        class="fas fa-edit"></i> Edit Profile</a>
-                            </div>
-                        <?php else: ?>
-                            <p class="text-center">No company details found.</p>
-                            <div class="text-center mt-4">
-                                <a href="<?= base_url('index.php/company/edit') ?>" class="btn btn-custom btn-create"><i
-                                        class="fas fa-plus"></i> Create Profile</a>
-                            </div>
-                        <?php endif; ?>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
 
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+                <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+                <script>
+                    const sidebar = document.getElementById('sidebar');
+                    const contentWrapper = document.getElementById('contentWrapper');
+
+                    function adjustContent() {
+                        if (window.innerWidth <= 768) {
+                            contentWrapper.style.marginLeft = '0';
+                            contentWrapper.style.width = '100%';
+                        } else {
+                            contentWrapper.style.marginLeft = '250px';
+                            contentWrapper.style.width = 'calc(100% - 250px)';
+                        }
+                    }
+
+                    window.addEventListener('resize', adjustContent);
+                    adjustContent();
+                </script>
     </body>
 
 </html>

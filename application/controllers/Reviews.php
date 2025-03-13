@@ -16,8 +16,14 @@ class Reviews extends CI_Controller
 
     public function form()
     {
-        $this->load->view('reviews/review_form');
+        $this->load->model('Company_model'); // Load the Company model
+        $company = $this->Company_model->get_company(); // Fetch company data
+
+        $data['google_url'] = $company ? $company['google_url'] : '';
+
+        $this->load->view('reviews/review_form', $data);
     }
+
 
     public function save()
     {

@@ -16,7 +16,7 @@
             }
 
             .cont {
-                margin : 40px auto;
+                margin: 40px auto;
                 max-width: 500px;
                 /* margin-left: 25%; */
                 align-items: center;
@@ -33,10 +33,12 @@
                 height: auto;
                 border-radius: 50%;
             }
-            .stars{
-                margin-right:120px;
-                
+
+            .stars {
+                margin-right: 120px;
+
             }
+
             .stars input {
                 display: none;
             }
@@ -83,11 +85,11 @@
         <div class="cont">
             <div class="d-flex justify-content-center align-items-center">
                 <div class="image_box_add">
-                    <img src="https://cibbo.in/wp-content/uploads/2025/01/images-2-2.png" alt="">
+                    <img id="company-logo" src="" alt="Company Logo">
                 </div>
                 <div class="text-dark text-start ms-3">
-                    <h5>Cibbo Cafe and Bar | European Cafe and Bar</h5>
-                    <label>Posting publicly across Google</label>
+                    <h5 id="company-name"></h5>
+                    <label id="company-url"></label>
                 </div>
             </div>
 
@@ -119,15 +121,39 @@
         </div>
 
         <script>
+            // Function to get URL parameters
+            function getUrlParameter(name) {
+                name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+                var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+                var results = regex.exec(location.search);
+                return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+            }
+
             $(document).ready(function () {
+                // Fetch company details from URL
+                var companyName = getUrlParameter('name');
+                var companyLogo = getUrlParameter('logo');
+                var companyUrl = getUrlParameter('url');
+
+                // Update the HTML with the fetched data
+                $('#company-name').text(companyName);
+                $('#company-logo').attr('src', companyLogo);
+                $('#company-url').text(companyUrl).attr('href', companyUrl);
+
+                // Review form behavior
                 $("input[name='star']").change(function () {
                     let selectedStar = $(this).val();
                     $('#selectedStar').val(selectedStar);
 
                     if (selectedStar >= 4) {
-                        $.post("<?= site_url('index.php/reviews/save'); ?>", { selectedStar: selectedStar }, function (response) {
+                        $.post("<?= site_url('reviews/save'); ?>", { selectedStar: selectedStar }, function (response) {
                             if (response === 'success') {
-                                window.location.href = "<?= site_url('reviews/thankyou'); ?>";
+                                let googleUrl = "<?= $google_url; ?>";
+                                if (googleUrl) {
+                                    window.location.href = googleUrl;
+                                } else {
+                                    alert('Google review URL not configured.');
+                                }
                             } else {
                                 alert('Failed to save review');
                             }
@@ -137,10 +163,11 @@
                     }
                 });
 
+
                 $('#review-form').submit(function (e) {
                     e.preventDefault();
                     $.ajax({
-                        url: "<?= site_url('index.php/reviews/save'); ?>",
+                        url: "<?= site_url('reviews/save'); ?>",
                         type: "POST",
                         data: $(this).serialize(),
                         success: function (response) {
@@ -154,6 +181,7 @@
                             alert('An error occurred while saving the review');
                         }
                     });
+
                 });
             });
         </script>

@@ -31,20 +31,16 @@ class Login extends CI_Controller
                 // Set session data
                 $this->session->set_userdata('username', $user['username']);
                 $this->session->set_userdata('user_id', $user['id']);
-                redirect('index.php/users'); // Redirect to the users page or wherever needed
+                $this->session->set_userdata('type', $user['type']); // Store user type
+                $this->session->set_userdata('company_id', $user['company_id']); // Store company ID
+                redirect('users'); // Redirect to the users page or wherever needed
             } else {
                 $this->session->set_flashdata('error', 'Invalid password');
-                redirect('index.php/login');
+                redirect('login');
             }
         } else {
             $this->session->set_flashdata('error', 'User not found');
-            redirect('index.php/login');
+            redirect('login');
         }
     }
-
-
-
-
-
-
 }

@@ -25,7 +25,7 @@ class Smtp extends CI_Controller
         $this->load->view('smtp/index', $data);
     }
 
-    public function edit($id = null)
+    public function edit($id )
     {
         // If no ID is passed, treat it as an insert
         if ($id === null) {
@@ -53,7 +53,7 @@ class Smtp extends CI_Controller
             if ($id === null) {
                 if ($this->Smtp_model->insert_smtp($smtp_data)) {
                     $this->session->set_flashdata('success', 'SMTP credentials added successfully!');
-                    redirect('index.php/smtp'); // Redirect to the list or home
+                    redirect('smtp'); // Redirect to the list or home
                 } else {
                     $this->session->set_flashdata('error', 'Failed to add SMTP credentials.');
                 }
@@ -61,10 +61,10 @@ class Smtp extends CI_Controller
                 // Otherwise, update the existing credentials
                 if ($this->Smtp_model->update_smtp($id, $smtp_data)) {
                     $this->session->set_flashdata('success', 'SMTP credentials updated successfully!');
-                    redirect('index.php/smtp'); // Redirect to the list or home
+                    redirect('smtp'); // Redirect to the list or home
                 } else {
                     $this->session->set_flashdata('error', 'Failed to update SMTP credentials.');
-                    redirect('index.php/smtp');
+                    redirect('smtp');
                 }
             }
         }

@@ -17,8 +17,8 @@
         }
 
         .content-wrapper {
-            margin-left: 250px;
-            width: calc(100% - 250px);
+            margin-left: 20%;
+            width: calc(100% - 20%);
             min-height: 100vh;
         }
 
@@ -31,6 +31,12 @@
             background: white;
             padding: 20px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+         @media (max-width: 768px) {
+              .content-wrapper {
+                margin-left: 10%;
+                margin-top: 25px;
+            }
         }
     </style>
 </head>

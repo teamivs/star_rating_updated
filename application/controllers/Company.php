@@ -15,8 +15,8 @@ class Company extends CI_Controller
     public function profile()
     {
         $data['company'] = $this->Company_model->get_company();
-        $this->load->view('components/sidebar');
-        $this->load->view('components/navbar');
+        // $this->load->view('components/sidebar');
+        // $this->load->view('components/navbar');
         $this->load->view('company/profile', $data);
     }
 
@@ -28,10 +28,11 @@ class Company extends CI_Controller
             // Form Validation
             $this->form_validation->set_rules('company_name', 'Company Name', 'required');
             $this->form_validation->set_rules('company_url', 'Company URL', 'required|valid_url');
+            $this->form_validation->set_rules('google_url', 'Google URL', 'required');
 
             if ($this->form_validation->run() === FALSE) {
                 $this->session->set_flashdata('error', validation_errors());
-                redirect('index.php/company/edit');
+                redirect('company/edit');
             }
 
             // Ensure the upload directory exists
@@ -56,7 +57,7 @@ class Company extends CI_Controller
                     $logo = 'uploads/' . $this->upload->data('file_name');
                 } else {
                     $this->session->set_flashdata('error', $this->upload->display_errors());
-                    redirect('index.php/company/edit');
+                    redirect('company/edit');
                 }
             } else {
                 $logo = $data['company']['company_logo'] ?? '';
@@ -66,7 +67,8 @@ class Company extends CI_Controller
             $company_data = [
                 'company_name' => $this->input->post('company_name'),
                 'company_logo' => $logo,
-                'company_url' => $this->input->post('company_url')
+                'company_url' => $this->input->post('company_url'),
+                 'google_url' => $this->input->post('google_url')
             ];
 
             // Save Data
@@ -76,7 +78,7 @@ class Company extends CI_Controller
                 $this->session->set_flashdata('error', 'Failed to update company profile.');
             }
 
-            redirect('index.php/company/profile');
+            redirect('company/profile');
         }
 
         $this->load->view('company/edit', $data);

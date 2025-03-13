@@ -29,7 +29,7 @@ class Users extends CI_Controller
         } else {
             $this->session->set_flashdata('error', 'Error deleting user.');
         }
-        redirect('index.php/users');
+        redirect('users');
     }
 
     public function edit($id)
@@ -79,7 +79,7 @@ class Users extends CI_Controller
 
             if ($this->User_model->insert_user($data)) {
                 $this->session->set_flashdata('success', 'User added successfully!');
-                redirect('index.php/users');
+                redirect('users');
             } else {
                 $this->session->set_flashdata('error', 'Error adding user.');
                 redirect('users/add');

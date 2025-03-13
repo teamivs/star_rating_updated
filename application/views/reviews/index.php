@@ -21,11 +21,12 @@
             body {
                 font-family: 'Poppins', sans-serif;
                 background-color: rgb(240, 242, 245);
+                margin: auto;
             }
 
             .content-wrapper {
-                margin-left: 250px;
-                width: calc(100% - 250px);
+                margin-left: 20%;
+                width: calc(100% - 20%);
                 min-height: 100vh;
                 display: flex;
                 flex-direction: column;
@@ -43,6 +44,7 @@
                 box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             }
 
+
             .star {
                 color: #ffc107;
                 font-size: 18px;
@@ -56,6 +58,49 @@
                 /* Customize this color */
             }
 
+            @media (max-width: 768px) {
+                .content-wrapper {
+                    margin-left: 0;
+                    width: 100%;
+                }
+
+                .table-container {
+                    padding: 10px;
+                }
+
+                /* Adjust column widths for mobile */
+                table tr td:nth-child(1),
+                /* Sr. No */
+                table tr th:nth-child(1) {
+                    width: 10%;
+                }
+
+                table tr td:nth-child(2),
+                /* Name */
+                table tr th:nth-child(2) {
+                    width: 20%;
+                }
+
+                table tr td:nth-child(3),
+                /* Mobile No */
+                table tr th:nth-child(3) {
+                    width: 20%;
+                }
+
+                table tr td:nth-child(4),
+                /* Comment */
+                table tr th:nth-child(4) {
+                    width: 20%;
+                }
+
+                table tr td:nth-child(5),
+                /* Star Rating */
+                table tr th:nth-child(5) {
+                    width: 10%;
+                }
+            }
+
+
             /* Optional: Change text color on hover */
         </style>
 
@@ -64,58 +109,68 @@
     <body>
 
         <!-- Include Sidebar & Navbar -->
-        <?php $this->load->view('components/sidebar'); ?>
-        <?php $this->load->view('components/navbar'); ?>
+        <div class="container-scroller">
+
+            <?php $this->load->view('components/navbar'); ?>
+            <!-- partial -->
+            <div class="container-fluid page-body-wrapper">
+        
+                <?php $this->load->view('components/sidebar') ?>
 
         <div class="content-wrapper">
             <div class="main-content">
-                <div class="table-container">
-                    <h4 class="text-center fw-bold mb-4">Review List</h4>
+                <div class="container">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="table-container">
+                                <h4 class="text-center fw-bold mb-4">Review List</h4>
 
-
-                    <div class="table-responsive">
-                        <table class="table table-striped" id="reviewsTable">
-                            <thead class="table-dark">
-                                <tr>
-                                    <th>Sr. No</th>
-                                    <th>Name</th>
-                                    <th>Mobile No</th>
-                                    <th>Comment</th>
-                                    <th>Star Rating</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php if (!empty($reviews)) {
-                                    $sr_no = 1;
-                                    foreach ($reviews as $row) {
-                                        if ($row['star_rating'] <= 3) { // Show only 1-3 star reviews ?>
+                                <div class="table-responsive">
+                                    <table class="table table-striped" id="reviewsTable">
+                                        <thead class="table-dark">
                                             <tr>
-                                                <td data-order="<?= $sr_no; ?>"><?= $sr_no++; ?></td>
-                                                <td><?= htmlspecialchars($row['name_add']); ?></td>
-                                                <td><?= htmlspecialchars($row['mobile_no']); ?></td>
-                                                <td><?= htmlspecialchars($row['comments']); ?></td>
-                                                <td>
-                                                    <?php for ($i = 1; $i <= 5; $i++) {
-                                                        echo $i <= $row['star_rating'] ? '<i class="fas fa-star star"></i>' : '<i class="far fa-star"></i>';
-                                                    } ?>
-                                                </td>
+                                                <th>Sr. No</th>
+                                                <th>Name</th>
+                                                <th>Mobile No</th>
+                                                <th>Comment</th>
+                                                <th>Star Rating</th>
                                             </tr>
-                                        <?php }
-                                    }
-                                    // Show message if no 1-3 star reviews are found
-                                    if ($sr_no === 1) { ?>
-                                        <tr>
-                                            <td colspan='5' class='text-center'>No reviews with 1-3 stars found</td>
-                                        </tr>
-                                    <?php }
-                                } else { ?>
-                                    <tr>
-                                        <td colspan='5' class='text-center'>No reviews found</td>
-                                    </tr>
-                                <?php } ?>
-                            </tbody>
+                                        </thead>
+                                        <tbody>
+                                            <?php if (!empty($reviews)) {
+                                                $sr_no = 1;
+                                                foreach ($reviews as $row) {
+                                                    if ($row['star_rating'] <= 3) { // Show only 1-3 star reviews ?>
+                                                        <tr>
+                                                            <td data-order="<?= $sr_no; ?>"><?= $sr_no++; ?></td>
+                                                            <td><?= htmlspecialchars($row['name_add']); ?></td>
+                                                            <td><?= htmlspecialchars($row['mobile_no']); ?></td>
+                                                            <td><?= htmlspecialchars($row['comments']); ?></td>
+                                                            <td>
+                                                                <?php for ($i = 1; $i <= 5; $i++) {
+                                                                    echo $i <= $row['star_rating'] ? '<i class="fas fa-star star"></i>' : '<i class="far fa-star"></i>';
+                                                                } ?>
+                                                            </td>
+                                                        </tr>
+                                                    <?php }
+                                                }
+                                                // Show message if no 1-3 star reviews are found
+                                                if ($sr_no === 1) { ?>
+                                                    <tr>
+                                                        <td colspan='5' class='text-center'>No reviews with 1-3 stars found</td>
+                                                    </tr>
+                                                <?php }
+                                            } else { ?>
+                                                <tr>
+                                                    <td colspan='5' class='text-center'>No reviews found</td>
+                                                </tr>
+                                            <?php } ?>
+                                        </tbody>
 
-                        </table>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -160,9 +215,6 @@
                 $('.dataTables_filter').addClass('text-end');
             });
         </script>
-
-
-
 
     </body>
 

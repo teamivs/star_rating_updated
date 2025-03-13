@@ -19,7 +19,7 @@
             </div>
         <?php endif; ?>
 
-        <form action="http://localhost/star_rating/index.php/login/process" method="POST">
+        <form action="http://localhost/star_rating/login/process" method="POST">
             <div class="mb-3">
                 <input type="text" class="form-control" name="username" placeholder="Username" required>
             </div>
