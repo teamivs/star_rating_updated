@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 10, 2025 at 07:01 AM
+-- Generation Time: Apr 23, 2025 at 06:35 AM
 -- Server version: 10.4.10-MariaDB
 -- PHP Version: 7.3.12
 
@@ -54,7 +54,9 @@ INSERT INTO `comments` (`auto_id`, `comments`, `name_add`, `mobile_no`, `star_ra
 (11, '111111111111', 'A', '122', 3, '2025-03-10 03:54:07'),
 (12, 's', 'a', '11', 2, '2025-03-10 03:57:18'),
 (13, 's', 'a', '11', 2, '2025-03-10 03:58:06'),
-(14, NULL, NULL, NULL, 0, '2025-03-10 04:00:23');
+(14, NULL, NULL, NULL, 0, '2025-03-10 04:00:23'),
+(15, 'test', 'apurva', '8446587334', 3, '2025-04-23 04:25:58'),
+(16, 'test', 'apurva', '8446587334', 3, '2025-04-23 04:26:09');
 
 -- --------------------------------------------------------
 
@@ -154,7 +156,7 @@ ALTER TABLE `smtp_credentials`
 -- AUTO_INCREMENT for table `comments`
 --
 ALTER TABLE `comments`
-  MODIFY `auto_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `auto_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT for table `company_credentials`
