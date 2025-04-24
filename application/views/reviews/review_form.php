@@ -146,16 +146,28 @@
                     $('#selectedStar').val(selectedStar);
 
                     if (selectedStar >= 4) {
-                        $.post("<?= site_url('reviews/save'); ?>", { selectedStar: selectedStar }, function (response) {
-                            if (response === 'success') {
-                                let googleUrl = "<?= $google_url; ?>";
-                                if (googleUrl) {
-                                    window.location.href = googleUrl;
+                        $.ajax({
+                            url: "<?= site_url('reviews/save'); ?>",
+                            type: "POST",
+                            data: { selectedStar: selectedStar },
+                            dataType: 'text',
+                            success: function (response) {
+                                console.log('Star rating response:', response);
+                                if (response.includes('success')) {
+                                    let googleUrl = "<?= $google_url; ?>";
+                                    if (googleUrl) {
+                                        window.location.href = googleUrl;
+                                    } else {
+                                        alert('Google review URL not configured.');
+                                    }
                                 } else {
-                                    alert('Google review URL not configured.');
+                                    console.log('Star rating response did not contain success:', response);
+                                    alert('Failed to save review');
                                 }
-                            } else {
-                                alert('Failed to save review');
+                            },
+                            error: function (xhr, status, error) {
+                                console.error('Star rating AJAX error:', status, error);
+                                alert('An error occurred while saving the review');
                             }
                         });
                     } else {
@@ -170,18 +182,22 @@
                         url: "<?= site_url('reviews/save'); ?>",
                         type: "POST",
                         data: $(this).serialize(),
+                        dataType: 'text',
                         success: function (response) {
-                            if (response === 'success') {
+                            console.log('Response received:', response);
+                            // Check if response contains 'success' anywhere
+                            if (response.includes('success')) {
                                 window.location.href = "<?= site_url('reviews/thankyou'); ?>";
                             } else {
+                                console.log('Response did not contain success:', response);
                                 alert('Failed to save review');
                             }
                         },
-                        error: function () {
+                        error: function (xhr, status, error) {
+                            console.error('AJAX error:', status, error);
                             alert('An error occurred while saving the review');
                         }
                     });
-
                 });
             });
         </script>

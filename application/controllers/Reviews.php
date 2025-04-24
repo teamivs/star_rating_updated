@@ -94,9 +94,19 @@ class Reviews extends CI_Controller
                 }
             }
 
+            // Clear any previous output
+            ob_clean();
+            // Set content type to plain text
+            header('Content-Type: text/plain');
             echo 'success';
+            exit;
         } else {
+            // Clear any previous output
+            ob_clean();
+            // Set content type to plain text
+            header('Content-Type: text/plain');
             echo 'failure';
+            exit;
         }
     }
 
@@ -149,23 +159,59 @@ class Reviews extends CI_Controller
         $negative_percentage = ($total_reviews > 0)
             ? round(($negative_reviews / $total_reviews) * 100, 2) : 0;
 
+        // Get total comments (same as total reviews in this case)
+        $total_comments = $total_reviews;
+
+        // Get recent activities (last 10 reviews)
+        $recent_activities = $this->Comments_model->get_recent_reviews(10);
+
+        // Calculate monthly review trends for the chart
+        $monthly_trends = $this->Comments_model->get_monthly_review_trends();
+        $trend_labels = [];
+        $trend_data = [];
+        foreach ($monthly_trends as $trend) {
+            $trend_labels[] = date('M', strtotime($trend['month']));
+            $trend_data[] = $trend['count'];
+        }
+
+        // Calculate rating distribution for the doughnut chart
+        $distribution_data = [];
+        foreach ($rating_counts as $rating) {
+            $distribution_data[] = $rating['count'];
+        }
+
         $data = [
             'user_name' => $user_name,
             'rating_counts' => $rating_counts,
             'total_reviews' => $total_reviews,
+            'total_comments' => $total_comments,
             'average_rating' => $average_rating,
             'positive_reviews' => $positive_reviews,
             'negative_reviews' => $negative_reviews,
             'positive_percentage' => $positive_percentage,
             'negative_percentage' => $negative_percentage,
             'growth_percentage' => $growth_percentage,
+            'recent_activities' => $recent_activities,
+            'trend_labels' => $trend_labels,
+            'trend_data' => $trend_data,
+            'distribution_data' => $distribution_data
         ];
 
         $this->load->view('reviews/dashboard', $data);
     }
 
-
-
-
+    public function logout()
+    {
+        // Destroy the session
+        $this->session->sess_destroy();
+        
+        // Redirect to login page
+        redirect('login');
+    }
+    
+    public function thankyou()
+    {
+        $this->load->view('reviews/thankyou');
+    }
 }
 ?>

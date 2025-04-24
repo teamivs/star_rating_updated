@@ -10,19 +10,27 @@ class Company extends CI_Controller
         $this->load->model('Company_model');
         $this->load->helper(['url', 'form']);
         $this->load->library(['session', 'upload', 'form_validation']);
+        
+        // Check if user is logged in
+        if (!$this->session->userdata('user_id')) {
+            redirect('login');
+        }
     }
 
     public function profile()
     {
         $data['company'] = $this->Company_model->get_company();
-        // $this->load->view('components/sidebar');
-        // $this->load->view('components/navbar');
+        $data['user_name'] = $this->session->userdata('username');
+        
+        $this->load->view('components/navbar');
+        $this->load->view('components/sidebar');
         $this->load->view('company/profile', $data);
     }
 
     public function edit()
     {
         $data['company'] = $this->Company_model->get_company();
+        $data['user_name'] = $this->session->userdata('username');
 
         if ($this->input->post()) {
             // Form Validation
@@ -68,7 +76,7 @@ class Company extends CI_Controller
                 'company_name' => $this->input->post('company_name'),
                 'company_logo' => $logo,
                 'company_url' => $this->input->post('company_url'),
-                 'google_url' => $this->input->post('google_url')
+                'google_url' => $this->input->post('google_url')
             ];
 
             // Save Data
@@ -81,6 +89,8 @@ class Company extends CI_Controller
             redirect('company/profile');
         }
 
+        $this->load->view('components/navbar');
+        $this->load->view('components/sidebar');
         $this->load->view('company/edit', $data);
     }
 

@@ -6,7 +6,7 @@
       </button>
       <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
         <li><a class="dropdown-item" href="<?php echo base_url('settings'); ?>">Settings</a></li>
-        <li><a class="dropdown-item" href="<?php echo base_url('logout'); ?>">Logout</a></li>
+        <li><a class="dropdown-item" href="<?php echo base_url('reviews/logout'); ?>">Logout</a></li>
       </ul>
     </div>
   </div>

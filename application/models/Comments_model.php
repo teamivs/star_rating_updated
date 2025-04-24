@@ -16,6 +16,15 @@ class Comments_model extends CI_Model
     }
     public function save_review($data)
     {
+        // Set default values for required fields if not provided
+        if (!isset($data['created_at'])) {
+            $data['created_at'] = date('Y-m-d H:i:s');
+        }
+        
+        if (!isset($data['is_bot'])) {
+            $data['is_bot'] = 0;
+        }
+        
         return $this->db->insert('comments', $data);
     }
     public function get_rating_counts()
@@ -32,6 +41,37 @@ class Comments_model extends CI_Model
         return $this->db->count_all_results('comments');
     }
 
+    public function get_recent_reviews($limit = 10)
+    {
+        $this->db->select('name_add as user_name, comments as action, created_at as timestamp, is_bot');
+        $this->db->order_by('created_at', 'DESC');
+        $this->db->limit($limit);
+        $query = $this->db->get('comments');
+        return $query->result_array();
+    }
 
+    public function get_monthly_review_trends()
+    {
+        $this->db->select("DATE_FORMAT(created_at, '%Y-%m') as month, COUNT(*) as count");
+        $this->db->group_by("DATE_FORMAT(created_at, '%Y-%m')");
+        $this->db->order_by('month', 'ASC');
+        $this->db->limit(6); // Last 6 months
+        $query = $this->db->get('comments');
+        return $query->result_array();
+    }
+    
+    /**
+     * Get bot-generated reviews
+     * @param int $limit Number of reviews to return
+     * @return array
+     */
+    public function get_bot_reviews($limit = 10)
+    {
+        $this->db->where('is_bot', 1);
+        $this->db->order_by('created_at', 'DESC');
+        $this->db->limit($limit);
+        $query = $this->db->get('comments');
+        return $query->result_array();
+    }
 }
 ?>
