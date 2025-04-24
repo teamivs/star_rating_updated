@@ -4,10 +4,15 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 class ChatGpt {
     private $api_key;
     private $api_url = 'https://api.openai.com/v1/chat/completions';
+    private $company_info;
     
     public function __construct() {
         $CI =& get_instance();
         $this->api_key = $CI->config->item('openai_api_key');
+        
+        // Load the company credentials model
+        $CI->load->model('Company_model');
+        $this->company_info = $CI->Company_model->get_company();
         
         if (empty($this->api_key)) {
             log_message('error', 'OpenAI API key is not set in configuration');
@@ -61,9 +66,12 @@ class ChatGpt {
         $sentiment = $this->get_sentiment_for_rating($rating);
         $keyword_text = !empty($keywords) ? ' Include these keywords: ' . implode(', ', $keywords) : '';
         
-        return "Write a $sentiment review for a business. The review should be authentic, detailed, and specific.$keyword_text";
+        $company_name = isset($this->company_info['company_name']) ? $this->company_info['company_name'] : 'the business';
+        $company_location = isset($this->company_info['company_location']) ? " located in " . $this->company_info['company_location'] : '';
+        
+        return "Write a polite $sentiment experience review for $company_name,$company_location. The review should be authentic, detailed, and specific.$keyword_text";
     }
-    
+    //Please write polite and best experience review for <Companyname>, Locatd at Pune using keywords like website design, digital marketing and SEO Services
     /**
      * Get sentiment description based on rating
      */

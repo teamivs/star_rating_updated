@@ -68,7 +68,8 @@ CREATE TABLE `company_credentials` (
   `id` int(11) NOT NULL,
   `company_name` varchar(255) NOT NULL,
   `company_logo` varchar(255) DEFAULT NULL,
-  `company_url` varchar(255) NOT NULL
+  `company_url` varchar(255) NOT NULL,
+  `company_location` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------

@@ -1,23 +1,28 @@
 <?php
+defined('BASEPATH') OR exit('No direct script access allowed');
+
 class Company_model extends CI_Model
 {
+    public function __construct()
+    {
+        parent::__construct();
+        $this->load->database();
+    }
 
     public function get_company()
     {
-        return $this->db->get('company_credentials')->row_array();
+        $query = $this->db->get('company_credentials');
+        return $query->row_array();
     }
 
-    public function save_company($data)
+    public function update_company($data)
     {
-        // Check if a company already exists
-        $existing = $this->db->get('company_credentials')->row_array();
+        $this->db->where('id', 1); // Assuming we're always updating the first record
+        return $this->db->update('company_credentials', $data);
+    }
 
-        if ($existing) {
-            // Update existing record
-            return $this->db->update('company_credentials', $data, ['id' => $existing['id']]);
-        } else {
-            // Insert new record
-            return $this->db->insert('company_credentials', $data);
-        }
+    public function add_company($data)
+    {
+        return $this->db->insert('company_credentials', $data);
     }
 }
