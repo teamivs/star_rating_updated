@@ -21,20 +21,22 @@
             body {
                 font-family: 'Poppins', sans-serif;
                 background-color: rgb(240, 242, 245);
-                margin: auto;
+              
             }
-
+           
             .content-wrapper {
-                margin-left: 20%;
+                 margin-right: 20%;
                 width: calc(100% - 20%);
                 min-height: 100vh;
                 display: flex;
                 flex-direction: column;
+                 /* align-items: center;
+            justify-content: center; */
             }
 
             .main-content {
                 flex-grow: 1;
-                padding: 20px;
+                padding: 10px;
             }
 
             .table-container {
@@ -42,8 +44,33 @@
                 border-radius: 10px;
                 padding: 20px;
                 box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                margin: 0 auto;
+                max-width: 1200px;
+                width: 100%;
             }
 
+            .table-responsive {
+                margin: 0 auto;
+            }
+
+            #reviewsTable {
+                margin: 0 auto;
+                width: 100%;
+            }
+
+            .dataTables_wrapper {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .dataTables_filter {
+                margin-bottom: 15px;
+            }
+
+            .dataTables_length {
+                margin-bottom: 15px;
+            }
 
             .star {
                 color: #ffc107;
@@ -111,11 +138,11 @@
         <!-- Include Sidebar & Navbar -->
         <div class="container-scroller">
 
-            <?php $this->load->view('components/navbar'); ?>
+            <!-- Navbar removed -->
             <!-- partial -->
             <div class="container-fluid page-body-wrapper">
         
-                <?php $this->load->view('components/sidebar') ?>
+                <!-- Sidebar removed -->
 
         <div class="content-wrapper">
             <div class="main-content">

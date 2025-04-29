@@ -59,7 +59,7 @@
 <body>
     <div class="container-scroller">
 
-        <?php $this->load->view('components/navbar'); ?>
+        <!-- Navbar removed -->
         <!-- partial -->
         <div class="container-fluid page-body-wrapper">
 

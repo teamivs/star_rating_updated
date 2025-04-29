@@ -55,15 +55,15 @@ class Keywords_model extends CI_Model
         if ($category) {
             $this->db->where('category', $category);
         }
-        
+
         $this->db->select('keyword');
         $this->db->from('keywords');
         $this->db->where('is_active', 1);
         $this->db->order_by('RAND()');
         $this->db->limit(5);
-        
+
         $query = $this->db->get();
-        
+
         if ($query->num_rows() > 0) {
             $keywords = [];
             foreach ($query->result() as $row) {
@@ -71,7 +71,7 @@ class Keywords_model extends CI_Model
             }
             return $keywords;
         }
-        
+
         return [];
     }
 
@@ -84,9 +84,9 @@ class Keywords_model extends CI_Model
         $this->db->from('keywords');
         $this->db->where('status', 1);
         $this->db->order_by('category', 'ASC');
-        
+
         $query = $this->db->get();
-        
+
         if ($query->num_rows() > 0) {
             $categories = [];
             foreach ($query->result() as $row) {
@@ -94,7 +94,7 @@ class Keywords_model extends CI_Model
             }
             return $categories;
         }
-        
+
         return [];
     }
 
@@ -107,7 +107,7 @@ class Keywords_model extends CI_Model
     {
         $data['created_at'] = date('Y-m-d H:i:s');
         $data['status'] = 1;
-        
+
         return $this->db->insert('keywords', $data);
     }
 
@@ -120,7 +120,7 @@ class Keywords_model extends CI_Model
     public function update_keyword($id, $data)
     {
         $data['updated_at'] = date('Y-m-d H:i:s');
-        
+
         $this->db->where('id', $id);
         return $this->db->update('keywords', $data);
     }
@@ -147,16 +147,32 @@ class Keywords_model extends CI_Model
         $this->db->where('id', $id);
         $query = $this->db->get('keywords');
         $keyword = $query->row_array();
-        
+
         if ($keyword) {
             // Toggle the status
             $new_status = $keyword['is_active'] ? 0 : 1;
-            
+
             $this->db->where('id', $id);
             return $this->db->update('keywords', ['is_active' => $new_status]);
         }
-        
+
         return false;
     }
+
+    public function get_filtered_keywords($keyword = '', $category = '')
+    {
+        $this->db->from('keywords');
+        $this->db->where('is_active', 1);
+
+        if (!empty($keyword)) {
+            $this->db->like('keyword', $keyword);
+        }
+        if (!empty($category)) {
+            $this->db->where('category', $category);
+        }
+
+        $query = $this->db->get();
+        return $query->result_array();
+    }
 }
-?> 
+?>

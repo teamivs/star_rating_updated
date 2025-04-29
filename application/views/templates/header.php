@@ -24,6 +24,30 @@
             box-shadow: 0 0 1px rgba(0,0,0,.125), 0 1px 3px rgba(0,0,0,.2);
             margin-bottom: 1rem;
         }
+        /* Remove navbar padding */
+        body {
+            padding-top: 0;
+        }
+        /* Consistent sidebar font styling */
+        .nav-sidebar .nav-item .nav-link {
+            font-family: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            font-size: 0.9rem;
+            font-weight: 400;
+            line-height: 1.5;
+            color: #c2c7d0;
+        }
+        .nav-sidebar .nav-item .nav-link:hover {
+            color: #fff;
+        }
+        .nav-sidebar .nav-item .nav-link.active {
+            color: #fff;
+            font-weight: 600;
+        }
+        .nav-sidebar .nav-item .nav-link p {
+            margin: 0;
+            font-size: inherit;
+            font-weight: inherit;
+        }
     </style>
 </head>
 <body class="hold-transition sidebar-mini">
@@ -40,8 +64,8 @@
             <!-- Right navbar links -->
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item">
-                    <a class="nav-link" href="<?php echo site_url('reviews/logout'); ?>" role="button">
-                        <i class="fas fa-sign-out-alt"></i> Logout
+                    <a class="nav-link" data-widget="fullscreen" href="#" role="button">
+                        <i class="fas fa-expand-arrows-alt"></i>
                     </a>
                 </li>
             </ul>
@@ -89,12 +113,12 @@
                                 <p>Keywords</p>
                             </a>
                         </li>
-                        <li class="nav-item">
+                       <!-- <li class="nav-item">
                             <a href="<?php echo site_url('bot_reviews'); ?>" class="nav-link <?php echo ($this->uri->segment(1) == 'bot_reviews') ? 'active' : ''; ?>">
                                 <i class="nav-icon fas fa-robot"></i>
                                 <p>Bot Reviews</p>
                             </a>
-                        </li>
+                        </li>-->
                         <li class="nav-item">
                             <a href="<?php echo site_url('smtp'); ?>" class="nav-link <?php echo ($this->uri->segment(1) == 'smtp') ? 'active' : ''; ?>">
                                 <i class="nav-icon fas fa-envelope"></i>
@@ -107,10 +131,18 @@
                                 <p>Company Info</p>
                             </a>
                         </li>
+                        <?php if ($this->session->userdata('role') === 'super_admin'): ?>
                         <li class="nav-item">
                             <a href="<?php echo site_url('users'); ?>" class="nav-link <?php echo ($this->uri->segment(1) == 'users') ? 'active' : ''; ?>">
                                 <i class="nav-icon fas fa-users"></i>
                                 <p>Users</p>
+                            </a>
+                        </li>
+                        <?php endif; ?>
+                        <li class="nav-item">
+                            <a href="<?php echo site_url('reviews/logout'); ?>" class="nav-link">
+                                <i class="nav-icon fas fa-sign-out-alt"></i>
+                                <p>Logout</p>
                             </a>
                         </li>
                     </ul>

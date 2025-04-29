@@ -34,6 +34,23 @@ class User_model extends CI_Model
 
     public function delete_user($id)
     {
+        // Prevent deleting the super admin
+        $user = $this->get_user_by_id($id);
+        if ($user && $user['role'] === 'super_admin') {
+            return false;
+        }
         return $this->db->where('id', $id)->delete('login');
+    }
+
+    public function is_super_admin($user_id)
+    {
+        $user = $this->get_user_by_id($user_id);
+        return $user && $user['role'] === 'super_admin';
+    }
+
+    public function is_admin($user_id)
+    {
+        $user = $this->get_user_by_id($user_id);
+        return $user && ($user['role'] === 'admin' || $user['role'] === 'super_admin');
     }
 }

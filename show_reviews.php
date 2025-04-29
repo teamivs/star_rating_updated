@@ -39,7 +39,14 @@ $result = $conn->query($query);
             /* display: flex; */
         }
 
-        
+        .container-fluid.page-body-wrapper {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
 
         .content-wrapper {
             margin-left: 250px;
@@ -48,7 +55,6 @@ $result = $conn->query($query);
             flex-direction: column;
             min-height: 100vh;
         }
-
 
         .main-content {
             flex-grow: 1;
@@ -74,11 +80,7 @@ $result = $conn->query($query);
 
     <!-- Include Sidebar -->
     <?php include 'components/sidebar.php'; ?>
-    <?php include 'components/navbar.php'; ?>
     <div class="content-wrapper">
-        <!-- Include Navbar -->
-
-
         <div class="main-content">
             <div class="table-container">
                 <h4 class="text-center fw-bold mb-4">Review List</h4>

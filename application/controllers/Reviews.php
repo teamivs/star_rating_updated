@@ -8,22 +8,134 @@ class Reviews extends CI_Controller
         parent::__construct();
         $this->load->model('Comments_model');
         $this->load->model('Smtp_model');
+        $this->load->model('Keywords_model');
         $this->load->helper('url');
         $this->load->library('email');
         $this->load->library('session'); // Load the session library
         $this->load->model('User_model');
     }
 
-    public function form()
+    public function form($user_id = null, $review_type = null)
     {
-        $this->load->model('Company_model'); // Load the Company model
-        $company = $this->Company_model->get_company(); // Fetch company data
+        $this->load->model('Company_model');
 
-        $data['google_url'] = $company ? $company['google_url'] : '';
+        // Get company data for the specific user
+        $company = $this->Company_model->get_company_by_user($user_id);
 
+        if (!$company) {
+            show_error('Company information not found');
+        }
+
+        // Check if company_logo exists and is not empty
+        $company_logo = !empty($company['company_logo']) ? $company['company_logo'] : 'assets/images/default-logo.png';
+
+        $data = [
+            'company_name' => $company['company_name'],
+            'company_logo' => $company_logo, // Pass the raw path
+            'google_url' => $company['google_url'],
+            'user_id' => $user_id,
+            'review_type' => $review_type,
+            'title' => 'Review Form'
+        ];
+
+        $this->load->view('templates/header', $data);
         $this->load->view('reviews/review_form', $data);
+        $this->load->view('templates/footer');
     }
 
+    public function generate_ai_review()
+    {
+        $this->load->model('Company_model');
+
+        // Get user_id from the form submission
+        $user_id = $this->input->post('user_id');
+
+        // Get company data for the specific user
+        $company = $this->Company_model->get_company_by_user($user_id);
+
+        if (!$company) {
+            redirect('reviews/form');
+        }
+
+        $starRating = $this->input->post('selectedStar');
+        $review_type = $this->input->post('review_type');
+
+        // Only generate AI review for 4-5 star ratings and when review_type is 1
+        if ($starRating >= 4 && $review_type == 1) {
+            // Generate AI review based on sentiment
+            $ai_review = $this->generateReview($starRating, $company['company_name']);
+
+            $data = [
+                'ai_review' => $ai_review,
+                'company_name' => $company['company_name'],
+                'company_logo' => $company['company_logo'],
+                'google_url' => $company['google_url'],
+                'title' => 'AI Generated Review'
+            ];
+
+            $this->load->view('templates/header', $data);
+            $this->load->view('reviews/ai_review', $data);
+            $this->load->view('templates/footer');
+        } else if ($starRating >= 4 && $review_type == 2) {
+            // For non-AI reviews with 4-5 stars, redirect to Google URL
+            redirect($company['google_url']);
+        } else {
+            // For 1-3 star ratings, proceed with normal review process
+            redirect('reviews/form');
+        }
+    }
+
+    private function generateReview($rating, $company_name)
+    {
+        // Get all active keywords from database
+        $keywords = $this->Keywords_model->get_all_active_keywords();
+
+        // Group keywords by category
+        $keywords_by_category = [];
+        foreach ($keywords as $keyword) {
+            $keywords_by_category[$keyword['category']][] = $keyword['keyword'];
+        }
+
+        // Get available categories
+        $categories = array_keys($keywords_by_category);
+
+        // Select 2-3 random categories
+        $num_categories = rand(2, 3);
+        $selected_categories = array_rand(array_flip($categories), min($num_categories, count($categories)));
+
+        // Select 4-5 random keywords from selected categories
+        $selected_keywords = [];
+        foreach ($selected_categories as $category) {
+            if (isset($keywords_by_category[$category])) {
+                $category_keywords = $keywords_by_category[$category];
+                if (!empty($category_keywords)) {
+                    $num_keywords = rand(1, 2);
+                    $category_selected = array_rand(array_flip($category_keywords), min($num_keywords, count($category_keywords)));
+                    if (is_array($category_selected)) {
+                        $selected_keywords = array_merge($selected_keywords, $category_selected);
+                    } else {
+                        $selected_keywords[] = $category_selected;
+                    }
+                }
+            }
+        }
+
+        // Load ChatGPT library
+        $this->load->library('chatgpt');
+
+        // Get company data for the specific user
+        $company = $this->Company_model->get_company_by_user($this->input->post('user_id'));
+
+        // Generate review using ChatGPT with the specific company name and location
+        $review = $this->chatgpt->generate_review($rating, $selected_keywords, $company_name, $company['company_location']);
+
+        if (!$review) {
+            // Fallback to a simple review if ChatGPT fails
+            $review = "I had a great experience with " . $company_name . ". Their service was excellent and I would highly recommend them.";
+        }
+
+        return $review;
+    }
 
     public function save()
     {
@@ -113,8 +225,13 @@ class Reviews extends CI_Controller
     public function index()
     {
         $data['reviews'] = $this->Comments_model->get_reviews();
+        $data['title'] = 'Reviews';
+
+        $this->load->view('templates/header', $data);
         $this->load->view('reviews/index', $data);
+        $this->load->view('templates/footer');
     }
+
     public function dashboard()
     {
         // Load the User_model if not autoloaded
@@ -181,6 +298,7 @@ class Reviews extends CI_Controller
         }
 
         $data = [
+            'title' => 'Dashboard',
             'user_name' => $user_name,
             'rating_counts' => $rating_counts,
             'total_reviews' => $total_reviews,
@@ -197,21 +315,27 @@ class Reviews extends CI_Controller
             'distribution_data' => $distribution_data
         ];
 
+        $this->load->view('templates/header', $data);
         $this->load->view('reviews/dashboard', $data);
+        $this->load->view('templates/footer');
     }
 
     public function logout()
     {
         // Destroy the session
         $this->session->sess_destroy();
-        
+
         // Redirect to login page
         redirect('login');
     }
-    
+
     public function thankyou()
     {
+        $data['title'] = 'Thank You';
+
+        $this->load->view('templates/header', $data);
         $this->load->view('reviews/thankyou');
+        $this->load->view('templates/footer');
     }
 }
 ?>

@@ -33,9 +33,10 @@
             }
 
             .main-container {
-                margin-left: 20%;
+                margin-left: 10%;
                 padding: 20px;
                 transition: all 0.3s ease;
+                margin-right: 10%;
             }
 
             .dashboard-wrapper {
@@ -167,11 +168,9 @@
     <body>
         <div class="container-scroller">
 
-            <?php $this->load->view('components/navbar'); ?>
+            <!-- Navbar removed -->
             <!-- partial -->
             <div class="container-fluid page-body-wrapper">
-
-                <?php $this->load->view('components/sidebar') ?>
 
                 <div class="main-container">
                     <div class="welcome-section">

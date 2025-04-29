@@ -7,69 +7,75 @@ class Smtp extends CI_Controller
     {
         parent::__construct();
         $this->load->model('Smtp_model');
-        $this->load->helper('url');
-        $this->load->library('session');
+        $this->load->helper(['url', 'form']);
+        $this->load->library(['session', 'form_validation']);
 
-        // Debugging: Print session data
-        if (!$this->session->userdata('username')) {
-            echo "Session not set!";
-            exit();
-            redirect('login'); // Redirect if user is not logged in
+        // Check if user is logged in
+        if (!$this->session->userdata('user_id')) {
+            redirect('login');
         }
     }
 
     public function index()
     {
-        // Fetch SMTP credentials, if available
         $data['credentials'] = $this->Smtp_model->get_smtp_credentials();
+        $data['title'] = 'SMTP Settings';
+        $data['user_name'] = $this->session->userdata('username');
+
+        $this->load->view('templates/header', $data);
         $this->load->view('smtp/index', $data);
+        $this->load->view('templates/footer');
     }
 
-    public function edit($id )
+    public function edit($id = null)
     {
-        // If no ID is passed, treat it as an insert
-        if ($id === null) {
-            $data['credentials'] = null; // No credentials, so we will add new ones
-        } else {
-            // Fetch the SMTP credentials for the given ID
-            $data['credentials'] = $this->Smtp_model->get_smtp_by_id($id);
+        $data['title'] = 'Edit SMTP Settings';
+        $data['user_name'] = $this->session->userdata('username');
 
-            // If no credentials found, show 404
-            if (!$data['credentials']) {
-                show_404();
-            }
-        }
-
-        // Handle form submission to insert/update the SMTP credentials
         if ($this->input->post()) {
-            $smtp_data = [
+            // Form Validation
+            $this->form_validation->set_rules('smtp_host', 'SMTP Host', 'required');
+            $this->form_validation->set_rules('smtp_port', 'SMTP Port', 'required|numeric');
+            $this->form_validation->set_rules('smtp_email', 'SMTP Email', 'required|valid_email');
+
+            if ($this->form_validation->run() === FALSE) {
+                $this->session->set_flashdata('error', validation_errors());
+                redirect('smtp/edit');
+            }
+
+            $credentials = [
                 'smtp_host' => $this->input->post('smtp_host'),
                 'smtp_port' => $this->input->post('smtp_port'),
-                'smtp_email' => $this->input->post('smtp_email'),
-                'smtp_password' => $this->input->post('smtp_password')
+                'smtp_email' => $this->input->post('smtp_email')
             ];
 
-            // If we're adding new credentials (no ID), insert them
-            if ($id === null) {
-                if ($this->Smtp_model->insert_smtp($smtp_data)) {
-                    $this->session->set_flashdata('success', 'SMTP credentials added successfully!');
-                    redirect('smtp'); // Redirect to the list or home
-                } else {
-                    $this->session->set_flashdata('error', 'Failed to add SMTP credentials.');
-                }
-            } else {
-                // Otherwise, update the existing credentials
-                if ($this->Smtp_model->update_smtp($id, $smtp_data)) {
+            // Only update password if provided
+            if (!empty($this->input->post('smtp_password'))) {
+                $credentials['smtp_password'] = $this->input->post('smtp_password');
+            }
+
+            if ($id) {
+                // Update existing credentials
+                if ($this->Smtp_model->update_credentials($id, $credentials)) {
                     $this->session->set_flashdata('success', 'SMTP credentials updated successfully!');
-                    redirect('smtp'); // Redirect to the list or home
                 } else {
                     $this->session->set_flashdata('error', 'Failed to update SMTP credentials.');
-                    redirect('smtp');
+                }
+            } else {
+                // Save new credentials
+                if ($this->Smtp_model->save_credentials($credentials)) {
+                    $this->session->set_flashdata('success', 'SMTP credentials saved successfully!');
+                } else {
+                    $this->session->set_flashdata('error', 'Failed to save SMTP credentials.');
                 }
             }
+
+            redirect('smtp');
         }
 
-        // Load the view with the SMTP data (if available)
+        $data['credentials'] = $this->Smtp_model->get_smtp_credentials();
+        $this->load->view('templates/header', $data);
         $this->load->view('smtp/edit_smtp', $data);
+        $this->load->view('templates/footer');
     }
 }

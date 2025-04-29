@@ -1,5 +1,5 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 
 /*
 | -------------------------------------------------------------------------
@@ -53,6 +53,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
 $route['default_controller'] = 'login';
+$route['(:num)/(:num)'] = 'reviews/form/$1/$2';
 $route['smtp/edit/(:num)'] = 'smtp/edit/$1';
 $route['users'] = 'users/index';
 $route['users/delete/(:num)'] = 'users/delete/$1';
@@ -60,10 +61,12 @@ $route['users/edit/(:num)'] = 'users/edit/$1';
 $route['users/add'] = 'users/add';
 $route['reviews'] = 'Reviews/index';
 $route['reviews/save'] = 'Reviews/save';
-$route['reviews/form'] = '  ';
+$route['reviews/form'] = 'Reviews/form';
+$route['reviews/generate_ai_review'] = 'Reviews/generate_ai_review';
 $route['reviews/dashboard'] = 'Reviews/dashboard';
 $route['company/profile'] = 'company/profile';
 $route['company/edit'] = 'company/edit';
+$route['company'] = 'company/profile';
 $route['login'] = 'login/index';
 $route['login/process'] = 'login/process';
 

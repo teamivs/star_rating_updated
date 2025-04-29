@@ -10,7 +10,7 @@ class Company extends CI_Controller
         $this->load->model('Company_model');
         $this->load->helper(['url', 'form']);
         $this->load->library(['session', 'upload', 'form_validation']);
-        
+
         // Check if user is logged in
         if (!$this->session->userdata('user_id')) {
             redirect('login');
@@ -19,18 +19,25 @@ class Company extends CI_Controller
 
     public function profile()
     {
-        $data['company'] = $this->Company_model->get_company();
+        // Only for admin, not super admin
+        if ($this->session->userdata('role') !== 'admin') {
+            show_404();
+        }
+        $user_id = $this->session->userdata('user_id');
+        $data['company'] = $this->Company_model->get_company_by_user($user_id);
         $data['user_name'] = $this->session->userdata('username');
-        
-        $this->load->view('components/navbar');
-        $this->load->view('components/sidebar');
+        $data['title'] = 'Company Profile';
+
+        $this->load->view('templates/header', $data);
         $this->load->view('company/profile', $data);
+        $this->load->view('templates/footer');
     }
 
     public function edit()
     {
         $data['company'] = $this->Company_model->get_company();
         $data['user_name'] = $this->session->userdata('username');
+        $data['title'] = 'Edit Company Profile';
 
         if ($this->input->post()) {
             // Form Validation
@@ -76,11 +83,13 @@ class Company extends CI_Controller
                 'company_name' => $this->input->post('company_name'),
                 'company_logo' => $logo,
                 'company_url' => $this->input->post('company_url'),
-                'google_url' => $this->input->post('google_url')
+                'google_url' => $this->input->post('google_url'),
+                'company_location' => $this->input->post('company_location')
             ];
 
             // Save Data
-            if ($this->Company_model->save_company($company_data)) {
+            $user_id = $this->session->userdata('user_id');
+            if ($this->Company_model->save_company($user_id, $company_data)) {
                 $this->session->set_flashdata('success', 'Company profile updated successfully!');
             } else {
                 $this->session->set_flashdata('error', 'Failed to update company profile.');
@@ -89,9 +98,9 @@ class Company extends CI_Controller
             redirect('company/profile');
         }
 
-        $this->load->view('components/navbar');
-        $this->load->view('components/sidebar');
+        $this->load->view('templates/header', $data);
         $this->load->view('company/edit', $data);
+        $this->load->view('templates/footer');
     }
 
 }

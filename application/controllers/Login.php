@@ -14,6 +14,15 @@ class Login extends CI_Controller
 
     public function index()
     {
+        // If user is already logged in, redirect to appropriate page
+        if ($this->session->userdata('user_id')) {
+            if ($this->User_model->is_super_admin($this->session->userdata('user_id'))) {
+                redirect('users');
+            } else {
+                redirect('reviews/dashboard');
+            }
+        }
+        
         $this->load->view('login_view'); // Make sure this view exists
     }
     public function process()
@@ -29,11 +38,18 @@ class Login extends CI_Controller
             // Check if the password matches
             if ($user['password'] === $password) {
                 // Set session data
-                $this->session->set_userdata('username', $user['username']);
-                $this->session->set_userdata('user_id', $user['id']);
-                $this->session->set_userdata('type', $user['type']); // Store user type
-                $this->session->set_userdata('company_id', $user['company_id']); // Store company ID
-                redirect('users'); // Redirect to the users page or wherever needed
+                $this->session->set_userdata([
+                    'username' => $user['username'],
+                    'user_id' => $user['id'],
+                    'role' => $user['role']
+                ]);
+                
+                // Redirect based on role
+                if ($user['role'] === 'super_admin') {
+                    redirect('users');
+                } else {
+                    redirect('reviews/dashboard');
+                }
             } else {
                 $this->session->set_flashdata('error', 'Invalid password');
                 redirect('login');
@@ -42,5 +58,11 @@ class Login extends CI_Controller
             $this->session->set_flashdata('error', 'User not found');
             redirect('login');
         }
+    }
+    
+    public function logout()
+    {
+        $this->session->sess_destroy();
+        redirect('login');
     }
 }

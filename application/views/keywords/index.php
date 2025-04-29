@@ -11,24 +11,43 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <?php if ($this->session->flashdata('success')) : ?>
+                    <?php if ($this->session->flashdata('success')): ?>
                         <div class="alert alert-success alert-dismissible">
                             <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
                             <?php echo $this->session->flashdata('success'); ?>
                         </div>
                     <?php endif; ?>
-                    
-                    <?php if ($this->session->flashdata('error')) : ?>
+
+                    <?php if ($this->session->flashdata('error')): ?>
                         <div class="alert alert-danger alert-dismissible">
                             <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
                             <?php echo $this->session->flashdata('error'); ?>
                         </div>
                     <?php endif; ?>
-                    
+
+                    <form method="get" class="form-inline mb-3">
+                        <div class="form-group mr-2">
+                            <input type="text" name="keyword" class="form-control" placeholder="Search keyword"
+                                value="<?= htmlspecialchars($this->input->get('keyword')) ?>">
+                        </div>
+                        <div class="form-group mr-2">
+                            <select name="category" class="form-control">
+                                <option value="">All Categories</option>
+                                <?php foreach ($categories as $cat): ?>
+                                    <option value="<?= htmlspecialchars($cat) ?>" <?= $this->input->get('category') == $cat ? 'selected' : '' ?>>
+                                        <?= ucfirst(str_replace('_', ' ', $cat)) ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Filter</button>
+                        <a href="<?= site_url('keywords') ?>" class="btn btn-secondary ml-2">Reset</a>
+                    </form>
+
                     <table class="table table-bordered table-striped">
                         <thead>
                             <tr>
-                                <th>ID</th>
+                                <!--<th>ID</th>-->
                                 <th>Category</th>
                                 <th>Keyword</th>
                                 <th>Status</th>
@@ -36,34 +55,34 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <?php if (!empty($keywords)) : ?>
-                                <?php foreach ($keywords as $keyword) : ?>
+                            <?php if (!empty($keywords)): ?>
+                                <?php foreach ($keywords as $keyword): ?>
                                     <tr>
-                                        <td><?php echo $keyword['id']; ?></td>
+                                        <!--<td><?php echo $keyword['id']; ?></td>-->
                                         <td><?php echo ucfirst(str_replace('_', ' ', $keyword['category'])); ?></td>
                                         <td><?php echo $keyword['keyword']; ?></td>
                                         <td>
-                                            <?php if ($keyword['is_active']) : ?>
+                                            <?php if ($keyword['is_active']): ?>
                                                 <span class="badge badge-success">Active</span>
-                                            <?php else : ?>
+                                            <?php else: ?>
                                                 <span class="badge badge-danger">Inactive</span>
                                             <?php endif; ?>
                                         </td>
                                         <td>
-                                            <a href="<?php echo site_url('keywords/toggle_status/' . $keyword['id']); ?>" 
-                                               class="btn btn-sm <?php echo $keyword['is_active'] ? 'btn-warning' : 'btn-success'; ?>"
-                                               onclick="return confirm('Are you sure you want to <?php echo $keyword['is_active'] ? 'deactivate' : 'activate'; ?> this keyword?');">
+                                            <a href="<?php echo site_url('keywords/toggle_status/' . $keyword['id']); ?>"
+                                                class="btn btn-sm <?php echo $keyword['is_active'] ? 'btn-warning' : 'btn-success'; ?>"
+                                                onclick="return confirm('Are you sure you want to <?php echo $keyword['is_active'] ? 'deactivate' : 'activate'; ?> this keyword?');">
                                                 <i class="fas fa-power-off"></i>
                                             </a>
-                                            <a href="<?php echo site_url('keywords/delete/' . $keyword['id']); ?>" 
-                                               class="btn btn-danger btn-sm"
-                                               onclick="return confirm('Are you sure you want to delete this keyword?');">
+                                            <a href="<?php echo site_url('keywords/delete/' . $keyword['id']); ?>"
+                                                class="btn btn-danger btn-sm"
+                                                onclick="return confirm('Are you sure you want to delete this keyword?');">
                                                 <i class="fas fa-trash"></i>
                                             </a>
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>
-                            <?php else : ?>
+                            <?php else: ?>
                                 <tr>
                                     <td colspan="5" class="text-center">No keywords found.</td>
                                 </tr>
@@ -74,4 +93,4 @@
             </div>
         </div>
     </div>
-</div> 
+</div>
