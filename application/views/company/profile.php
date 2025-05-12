@@ -113,51 +113,82 @@
                         <div class="row justify-content-center">
                             <div class="col-12 col-md-10 col-lg-8">
                                 <div class="card">
+                                    <div class="card-header">
+                                        <h3 class="card-title">Company Profile</h3>
+                                        <div class="card-tools">
+                                            <a href="<?= base_url('company/edit') ?>" class="btn btn-primary btn-sm">
+                                                <i class="fas fa-edit"></i> Edit Profile
+                                            </a>
+                                        </div>
+                                    </div>
                                     <div class="card-body">
-                                        <h4 class="text-center">Company Profile</h4>
+                                        <?php if ($this->session->flashdata('success')): ?>
+                                            <div class="alert alert-success alert-dismissible">
+                                                <button type="button" class="close" data-dismiss="alert"
+                                                    aria-hidden="true">&times;</button>
+                                                <?php echo $this->session->flashdata('success'); ?>
+                                            </div>
+                                        <?php endif; ?>
+
+                                        <?php if ($this->session->flashdata('error')): ?>
+                                            <div class="alert alert-danger alert-dismissible">
+                                                <button type="button" class="close" data-dismiss="alert"
+                                                    aria-hidden="true">&times;</button>
+                                                <?php echo $this->session->flashdata('error'); ?>
+                                            </div>
+                                        <?php endif; ?>
+
                                         <?php if ($company): ?>
-                                            <div class="text-center mb-4">
-                                                <?php if (!empty($company['company_logo'])): ?>
-                                                    <img src="<?= base_url($company['company_logo']) ?>" alt="Company Logo"
-                                                        class="company-logo">
-                                                <?php else: ?>
-                                                    <img src="https://via.placeholder.com/120" alt="No Logo"
-                                                        class="company-logo">
-                                                <?php endif; ?>
-                                            </div>
-                                            <div class="info-item">
-                                                <strong>Company Name:</strong>
-                                                <?= htmlspecialchars($company['company_name']) ?>
-                                            </div>
-                                            <div class="info-item">
-                                                <strong>Company URL:</strong> <a
-                                                    href="<?= htmlspecialchars($company['company_url']) ?>" target="_blank">
-                                                    <?= htmlspecialchars($company['company_url']) ?></a>
-                                            </div>
-                                            <?php if (!empty($company['company_location'])): ?>
-                                                <div class="info-item">
-                                                    <strong>Location:</strong>
-                                                    <?= htmlspecialchars($company['company_location']) ?>
+                                            <?php if ($this->session->userdata('user_role') !== 'super_admin'): ?>
+                                                <div class="text-center mb-4">
+                                                    <?php if (!empty($company['company_logo'])): ?>
+                                                        <img src="<?= base_url($company['company_logo']) ?>" alt="Company Logo"
+                                                            class="company-logo">
+                                                    <?php else: ?>
+                                                        <img src="https://via.placeholder.com/120" alt="No Logo"
+                                                            class="company-logo">
+                                                    <?php endif; ?>
                                                 </div>
+
+                                                <table class="table table-bordered table-striped">
+                                                    <tbody>
+                                                        <tr>
+                                                            <th style="width: 200px;">Company Name</th>
+                                                            <td><?= htmlspecialchars($company['company_name']) ?></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th>Company URL</th>
+                                                            <td>
+                                                                <a href="<?= htmlspecialchars($company['company_url']) ?>"
+                                                                    target="_blank">
+                                                                    <?= htmlspecialchars($company['company_url']) ?>
+                                                                </a>
+                                                            </td>
+                                                        </tr>
+                                                        <?php if (!empty($company['company_location'])): ?>
+                                                            <tr>
+                                                                <th>Location</th>
+                                                                <td><?= htmlspecialchars($company['company_location']) ?></td>
+                                                            </tr>
+                                                        <?php endif; ?>
+                                                    </tbody>
+                                                </table>
                                             <?php endif; ?>
+
                                             <div class="text-center mt-4">
                                                 <a href="<?= base_url($this->session->userdata('user_id') . '/1') ?>"
-                                                    class="btn btn-primary btn-custom">
+                                                    class="btn btn-primary">
                                                     <i class="fas fa-star"></i> Leave a Review
                                                 </a>
                                             </div>
-
-                                            <div class="text-end mt-4">
-                                                <a href="<?= base_url('company/edit') ?>"
-                                                    class="btn btn-primary btn-custom btn-edit"><i class="fas fa-edit"></i>
-                                                    Edit</a>
-                                            </div>
                                         <?php else: ?>
-                                            <p class="text-center">No company details found.</p>
-                                            <div class="text-center mt-4">
-                                                <a href="<?= base_url('company/edit') ?>"
-                                                    class="btn btn-custom btn-create"><i class="fas fa-plus"></i> Create
-                                                    Profile</a>
+                                            <div class="alert alert-info">
+                                                No company details found. Please create your company profile.
+                                            </div>
+                                            <div class="text-center">
+                                                <a href="<?= base_url('company/edit') ?>" class="btn btn-primary">
+                                                    <i class="fas fa-plus"></i> Create Profile
+                                                </a>
                                             </div>
                                         <?php endif; ?>
                                     </div>

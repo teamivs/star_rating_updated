@@ -35,7 +35,8 @@ class Company extends CI_Controller
 
     public function edit()
     {
-        $data['company'] = $this->Company_model->get_company();
+        $user_id = $this->session->userdata('user_id');
+        $data['company'] = $this->Company_model->get_company_by_user($user_id);
         $data['user_name'] = $this->session->userdata('username');
         $data['title'] = 'Edit Company Profile';
 
@@ -49,7 +50,6 @@ class Company extends CI_Controller
                 $this->session->set_flashdata('error', validation_errors());
                 redirect('company/edit');
             }
-
             // Ensure the upload directory exists
             $upload_path = FCPATH . 'uploads/';
             if (!is_dir($upload_path)) {
@@ -65,7 +65,6 @@ class Company extends CI_Controller
             $config['upload_path'] = $upload_path;
             $config['allowed_types'] = 'jpg|jpeg|png|gif';
             $this->upload->initialize($config);
-
             // Handle File Upload
             if (!empty($_FILES['company_logo']['name'])) {
                 if ($this->upload->do_upload('company_logo')) {
@@ -88,7 +87,6 @@ class Company extends CI_Controller
             ];
 
             // Save Data
-            $user_id = $this->session->userdata('user_id');
             if ($this->Company_model->save_company($user_id, $company_data)) {
                 $this->session->set_flashdata('success', 'Company profile updated successfully!');
             } else {
@@ -101,6 +99,28 @@ class Company extends CI_Controller
         $this->load->view('templates/header', $data);
         $this->load->view('company/edit', $data);
         $this->load->view('templates/footer');
+    }
+
+    // Assuming you have a function to fetch company details by ID
+    function getCompanyDetails($companyId)
+    {
+        // Fetch company details from the database
+        $query = "SELECT * FROM `company_credentials` WHERE `id` = ?";
+        $result = $this->db->query($query, [$companyId])->row();
+
+        return $result; // This will return the company details or null if not found
+    }
+
+    // In your controller method that loads the form
+    public function editCompanyProfile($companyId)
+    {
+        $companyDetails = $this->getCompanyDetails($companyId);
+
+        // Pass the company details to the view
+        $data['company'] = $companyDetails; // This will be null if no details are found
+
+        // Load the view with the data
+        $this->load->view('edit_company_profile', $data);
     }
 
 }

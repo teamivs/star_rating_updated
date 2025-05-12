@@ -37,7 +37,7 @@ class Smtp extends CI_Controller
             $this->form_validation->set_rules('smtp_host', 'SMTP Host', 'required');
             $this->form_validation->set_rules('smtp_port', 'SMTP Port', 'required|numeric');
             $this->form_validation->set_rules('smtp_email', 'SMTP Email', 'required|valid_email');
-
+            $this->form_validation->set_rules('encryption', 'Encryption', 'required');
             if ($this->form_validation->run() === FALSE) {
                 $this->session->set_flashdata('error', validation_errors());
                 redirect('smtp/edit');
@@ -46,7 +46,8 @@ class Smtp extends CI_Controller
             $credentials = [
                 'smtp_host' => $this->input->post('smtp_host'),
                 'smtp_port' => $this->input->post('smtp_port'),
-                'smtp_email' => $this->input->post('smtp_email')
+                'smtp_email' => $this->input->post('smtp_email'),
+                'encryption' => $this->input->post('encryption')
             ];
 
             // Only update password if provided

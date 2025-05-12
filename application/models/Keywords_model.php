@@ -82,7 +82,7 @@ class Keywords_model extends CI_Model
     {
         $this->db->select('DISTINCT(category)');
         $this->db->from('keywords');
-        $this->db->where('status', 1);
+        $this->db->where('is_active', 1);
         $this->db->order_by('category', 'ASC');
 
         $query = $this->db->get();
@@ -106,7 +106,7 @@ class Keywords_model extends CI_Model
     public function add_keyword($data)
     {
         $data['created_at'] = date('Y-m-d H:i:s');
-        $data['status'] = 1;
+        $data['is_active'] = 1;
 
         return $this->db->insert('keywords', $data);
     }
@@ -133,7 +133,7 @@ class Keywords_model extends CI_Model
     public function delete_keyword($id)
     {
         $this->db->where('id', $id);
-        return $this->db->update('keywords', ['status' => 0]);
+        return $this->db->update('keywords', ['is_active' => 0]);
     }
 
     /**
