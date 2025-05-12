@@ -5,7 +5,7 @@
                 <div class="card-header">
                     <h3 class="card-title">Add New Keyword</h3>
                     <div class="card-tools">
-                        <a href="<?php echo site_url('keywords'); ?>" class="btn btn-default btn-sm">
+                        <a href="<?php echo base_url('keywords'); ?>" class="btn btn-default btn-sm">
                             <i class="fas fa-arrow-left"></i> Back to List
                         </a>
                     </div>
