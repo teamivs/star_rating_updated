@@ -19,20 +19,15 @@
                     <?php endif; ?>
 
                     <?php echo form_open('keywords/save'); ?>
-                    <!-- <div class="form-group">
-                            <label for="category">Category</label>
-                            <select name="category" id="category" class="form-control" required>
-                                <option value="">Select Category</option>
-                                <option value="service_quality">Service Quality</option>
-                                <option value="product_quality">Product Quality</option>
-                                <option value="customer_experience">Customer Experience</option>
-                                <option value="business_specific">Business Specific</option>
-                            </select>
-                        </div> -->
+
                     <div class="form-group">
                         <label for="category">Category</label>
-                        <input type="text" name="category" id="category" class="form-control" required
-                            placeholder="Enter or type a new category">
+                        <select name="category" id="category" class="form-control" required>
+                            <option value="">Select Category</option>
+                            <?php foreach ($categories as $cat): ?>
+                                <option value="<?= htmlspecialchars($cat) ?>"><?= ucfirst(str_replace('_', ' ', $cat)) ?></option>
+                            <?php endforeach; ?>
+                        </select>
                     </div>
                     <div class="form-group">
                         <label for="keyword">Keyword</label>

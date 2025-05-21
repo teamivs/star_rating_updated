@@ -41,7 +41,6 @@ class Company extends CI_Controller
         $data['title'] = 'Edit Company Profile';
 
         if ($this->input->post()) {
-            // Form Validation
             $this->form_validation->set_rules('company_name', 'Company Name', 'required');
             $this->form_validation->set_rules('company_url', 'Company URL', 'required|valid_url');
             $this->form_validation->set_rules('google_url', 'Google URL', 'required');
@@ -50,32 +49,9 @@ class Company extends CI_Controller
                 $this->session->set_flashdata('error', validation_errors());
                 redirect('company/edit');
             }
-            // Ensure the upload directory exists
-            $upload_path = FCPATH . 'uploads/';
-            if (!is_dir($upload_path)) {
-                mkdir($upload_path, 0755, true);
-            }
 
-            // Ensure directory is writable
-            if (!is_writable($upload_path)) {
-                chmod($upload_path, 0755);
-            }
-
-            // File Upload Configuration
-            $config['upload_path'] = $upload_path;
-            $config['allowed_types'] = 'jpg|jpeg|png|gif';
-            $this->upload->initialize($config);
-            // Handle File Upload
-            if (!empty($_FILES['company_logo']['name'])) {
-                if ($this->upload->do_upload('company_logo')) {
-                    $logo = 'uploads/' . $this->upload->data('file_name');
-                } else {
-                    $this->session->set_flashdata('error', $this->upload->display_errors());
-                    redirect('company/edit');
-                }
-            } else {
-                $logo = $data['company']['company_logo'] ?? '';
-            }
+            // Use cropped image if available, otherwise keep existing or empty
+            $logo = $this->input->post('cropped_image') ?? $data['company']['company_logo'] ?? '';
 
             // Prepare Data
             $company_data = [
@@ -100,7 +76,6 @@ class Company extends CI_Controller
         $this->load->view('company/edit', $data);
         $this->load->view('templates/footer');
     }
-
     // Assuming you have a function to fetch company details by ID
     function getCompanyDetails($companyId)
     {
@@ -122,5 +97,69 @@ class Company extends CI_Controller
         // Load the view with the data
         $this->load->view('edit_company_profile', $data);
     }
+    public function upload_logo()
+    {
+        header('Content-Type: application/json');
 
+        // Get the absolute server path
+        $base_path = str_replace('\\', '/', FCPATH); // Normalize to forward slashes
+
+        // Define relative and absolute paths
+        $relative_path = 'uploads/company_logos/';
+        $absolute_path = $base_path . $relative_path;
+
+        // Create directory if it doesn't exist
+        if (!file_exists($absolute_path)) {
+            if (!mkdir($absolute_path, 0777, true)) {
+                echo json_encode([
+                    'success' => false,
+                    'error' => 'Failed to create directory',
+                    'path_used' => $absolute_path
+                ]);
+                return;
+            }
+        }
+
+        // Verify the path is writable
+        if (!is_writable($absolute_path)) {
+            echo json_encode([
+                'success' => false,
+                'error' => 'Directory exists but is not writable',
+                'path_used' => $absolute_path
+            ]);
+            return;
+        }
+
+        // Configure upload
+        $config = [
+            'upload_path' => $absolute_path,
+            'allowed_types' => 'jpg|jpeg|png|gif',
+            'max_size' => 2048,
+            'encrypt_name' => true,
+            'remove_spaces' => true
+        ];
+
+        $this->load->library('upload', $config);
+        $this->upload->initialize($config);
+
+        if ($this->upload->do_upload('croppedImage')) {
+            $upload_data = $this->upload->data();
+            echo json_encode([
+                'success' => true,
+                'file_path' => $relative_path . $upload_data['file_name']
+            ]);
+        } else {
+            echo json_encode([
+                'success' => false,
+                'error' => $this->upload->display_errors(),
+                'debug_info' => [
+                    'absolute_path' => $absolute_path,
+                    'relative_path' => $relative_path,
+                    'directory_exists' => file_exists($absolute_path),
+                    'is_writable' => is_writable($absolute_path),
+                    'free_space' => disk_free_space($base_path)
+                ]
+            ]);
+        }
+    }
 }

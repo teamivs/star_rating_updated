@@ -10,37 +10,47 @@ class Keywords_model extends CI_Model
     }
 
     /**
-     * Get all active keywords
+     * Get all active keywords for a specific admin
+     * @param int $admin_id
      * @return array
      */
-    public function get_all_active_keywords()
+    public function get_all_active_keywords($admin_id = null)
     {
+        if ($admin_id) {
+            $this->db->where('admin_id', $admin_id);
+        }
         $this->db->where('is_active', 1);
+        $this->db->order_by('category', 'ASC');
+        $this->db->order_by('keyword', 'ASC');
         $query = $this->db->get('keywords');
         return $query->result_array();
     }
 
     /**
-     * Get keywords by category
+     * Get keywords by category for a specific admin
      * @param string $category
+     * @param int $admin_id
      * @return array
      */
-    public function get_keywords_by_category($category)
+    public function get_keywords_by_category($category, $admin_id)
     {
         $this->db->where('category', $category);
         $this->db->where('is_active', 1);
+        $this->db->where('admin_id', $admin_id);
         $query = $this->db->get('keywords');
         return $query->result_array();
     }
 
     /**
-     * Get random keywords for review generation
+     * Get random keywords for review generation for a specific admin
+     * @param int $admin_id
      * @param int $limit
      * @return array
      */
-    public function get_random_keywords($limit = 5)
+    public function get_random_keywords($admin_id, $limit = 5)
     {
         $this->db->where('is_active', 1);
+        $this->db->where('admin_id', $admin_id);
         $this->db->order_by('RAND()');
         $this->db->limit($limit);
         $query = $this->db->get('keywords');
@@ -48,9 +58,9 @@ class Keywords_model extends CI_Model
     }
 
     /**
-     * Get keywords for a category
+     * Get keywords for a category for a specific admin
      */
-    public function get_keywords($category = null)
+    public function get_keywords($admin_id, $category = null)
     {
         if ($category) {
             $this->db->where('category', $category);
@@ -59,6 +69,7 @@ class Keywords_model extends CI_Model
         $this->db->select('keyword');
         $this->db->from('keywords');
         $this->db->where('is_active', 1);
+        $this->db->where('admin_id', $admin_id);
         $this->db->order_by('RAND()');
         $this->db->limit(5);
 
@@ -76,26 +87,18 @@ class Keywords_model extends CI_Model
     }
 
     /**
-     * Get all categories
+     * Get all categories for a specific admin
      */
-    public function get_categories()
+    public function get_categories($admin_id = null)
     {
-        $this->db->select('DISTINCT(category)');
-        $this->db->from('keywords');
-        $this->db->where('is_active', 1);
-        $this->db->order_by('category', 'ASC');
-
-        $query = $this->db->get();
-
-        if ($query->num_rows() > 0) {
-            $categories = [];
-            foreach ($query->result() as $row) {
-                $categories[] = $row->category;
-            }
-            return $categories;
+        if ($admin_id) {
+            $this->db->where('admin_id', $admin_id);
         }
-
-        return [];
+        $this->db->distinct();
+        $this->db->select('category');
+        $this->db->order_by('category', 'ASC');
+        $query = $this->db->get('keywords');
+        return array_column($query->result_array(), 'category');
     }
 
     /**
@@ -115,36 +118,42 @@ class Keywords_model extends CI_Model
      * Update a keyword
      * @param int $id
      * @param array $data
+     * @param int $admin_id
      * @return bool
      */
-    public function update_keyword($id, $data)
+    public function update_keyword($id, $data, $admin_id)
     {
         $data['updated_at'] = date('Y-m-d H:i:s');
 
         $this->db->where('id', $id);
+        $this->db->where('admin_id', $admin_id);
         return $this->db->update('keywords', $data);
     }
 
     /**
      * Delete a keyword
      * @param int $id
+     * @param int $admin_id
      * @return bool
      */
-    public function delete_keyword($id)
+    public function delete_keyword($id, $admin_id)
     {
         $this->db->where('id', $id);
-        return $this->db->update('keywords', ['is_active' => 0]);
+        $this->db->where('admin_id', $admin_id);
+        return $this->db->delete('keywords');
     }
 
     /**
      * Toggle the active status of a keyword
      * @param int $id
+     * @param int $admin_id
      * @return bool
      */
-    public function toggle_status($id)
+    public function toggle_status($id, $admin_id)
     {
         // Get the current status
         $this->db->where('id', $id);
+        $this->db->where('admin_id', $admin_id);
         $query = $this->db->get('keywords');
         $keyword = $query->row_array();
 
@@ -153,26 +162,26 @@ class Keywords_model extends CI_Model
             $new_status = $keyword['is_active'] ? 0 : 1;
 
             $this->db->where('id', $id);
+            $this->db->where('admin_id', $admin_id);
             return $this->db->update('keywords', ['is_active' => $new_status]);
         }
 
         return false;
     }
 
-    public function get_filtered_keywords($keyword = '', $category = '')
+    public function get_filtered_keywords($admin_id = null, $keyword = null, $category = null)
     {
-        $this->db->from('keywords');
-        $this->db->where('is_active', 1);
-
-        if (!empty($keyword)) {
+        if ($admin_id) {
+            $this->db->where('admin_id', $admin_id);
+        }
+        if ($keyword) {
             $this->db->like('keyword', $keyword);
         }
-        if (!empty($category)) {
+        if ($category) {
             $this->db->where('category', $category);
         }
-
-        $query = $this->db->get();
-        return $query->result_array();
+        $this->db->order_by('category', 'ASC');
+        $this->db->order_by('keyword', 'ASC');
+        return $this->db->get('keywords')->result_array();
     }
 }
-?>

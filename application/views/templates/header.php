@@ -32,28 +32,74 @@
             padding-top: 0;
         }
 
+        /* Brand link styling */
+        .brand-link {
+            text-decoration: none !important;
+            border-bottom: none !important;
+        }
+
+        .brand-link:hover {
+            text-decoration: none !important;
+        }
+
+        .brand-text {
+            font-family: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            font-size: 1.25rem;
+            font-weight: 400;
+            color: #fff;
+            text-decoration: none !important;
+        }
+
+        /* Pushmenu button styling */
+        .nav-link[data-widget="pushmenu"] {
+            padding: 0.5rem 1rem;
+            position: relative;
+            z-index: 1;
+        }
+
         /* Consistent sidebar font styling */
         .nav-sidebar .nav-item .nav-link {
             font-family: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            font-size: 0.9rem;
+            font-size: 1.0rem;
             font-weight: 400;
             line-height: 1.5;
             color: #c2c7d0;
+            text-decoration: none;
+            transition: all 0.3s ease;
         }
 
         .nav-sidebar .nav-item .nav-link:hover {
             color: #fff;
+            background-color: rgba(255, 255, 255, 0.1);
         }
 
         .nav-sidebar .nav-item .nav-link.active {
             color: #fff;
+            background-color: rgba(255, 255, 255, 0.1);
             font-weight: 600;
+            text-decoration: none;
         }
 
         .nav-sidebar .nav-item .nav-link p {
             margin: 0;
             font-size: inherit;
             font-weight: inherit;
+            color: inherit;
+        }
+
+        /* User panel styling */
+        .user-panel .info a {
+            font-family: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            font-size: 1.0rem;
+            font-weight: 400;
+            line-height: 1.5;
+            color: #c2c7d0;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .user-panel .info a:hover {
+            color: #fff;
         }
     </style>
 </head>
@@ -95,7 +141,8 @@
                 <div class="user-panel mt-3 pb-3 mb-3 d-flex">
                     <div class="info">
                         <a href="#"
-                            class="d-block"><?php echo $this->session->userdata('username') ? $this->session->userdata('username') : 'Admin'; ?></a>
+                            class="d-block"><?php echo $this->session->userdata('username') //? $this->session->userdata('username') : 'Admin'; 
+                                            ?></a>
                     </div>
                 </div>
 

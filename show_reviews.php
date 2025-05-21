@@ -34,38 +34,41 @@ $result = $conn->query($query);
 
     <style>
         body {
-             font-family: 'Poppins', sans-serif;
+            font-family: 'Poppins', sans-serif;
             background-color: rgb(240, 242, 245);
-            /* display: flex; */
         }
 
         .container-fluid.page-body-wrapper {
-            display: flex;
-            justify-content: center;
             width: 100%;
             max-width: 1400px;
             margin: 0 auto;
-            padding: 0 20px;
+            padding: 0 15px;
         }
 
         .content-wrapper {
-            margin-left: 250px;
-            width: calc(100% - 250px);
+            width: 100%;
             display: flex;
             flex-direction: column;
             min-height: 100vh;
         }
 
+        @media (min-width: 992px) {
+            .content-wrapper {
+                margin-left: 250px;
+                width: calc(100% - 250px);
+            }
+        }
+
         .main-content {
             flex-grow: 1;
-            padding: 20px;
+            padding: 15px;
             overflow-y: auto;
         }
 
         .table-container {
             background: white;
             border-radius: 10px;
-            padding: 20px;
+            padding: 15px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
@@ -73,11 +76,63 @@ $result = $conn->query($query);
             color: #ffc107;
             font-size: 18px;
         }
+
+        @media (max-width: 768px) {
+            .table-container {
+                padding: 10px;
+            }
+
+            .table th,
+            .table td {
+                padding: 8px;
+                font-size: 14px;
+            }
+
+            .star {
+                font-size: 16px;
+            }
+        }
+
+        .mobile-view {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .desktop-view {
+                display: none;
+            }
+
+            .mobile-view {
+                display: block;
+            }
+        }
+
+        .review-card {
+            background: #fff;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .review-card .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .review-card .review-content {
+            margin: 10px 0;
+        }
+
+        .review-card .review-rating {
+            margin-top: 10px;
+        }
     </style>
 </head>
 
 <body>
-
     <!-- Include Sidebar -->
     <?php include 'components/sidebar.php'; ?>
     <div class="content-wrapper">
@@ -89,57 +144,92 @@ $result = $conn->query($query);
                     <a href="logout.php" class="btn btn-primary">Logout</a>
                 </div>
 
-                <div class="table-responsive">
-                    <table class="table table-striped" id="reviewsTable">
-                        <thead class="table-dark">
-                            <tr>
-                                <th>Sr. No</th>
-                                <th>Name</th>
-                                <th>Mobile No</th>
-                                <th>Comment</th>
-                                <th>Star Rating</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php
-                            if ($result->num_rows > 0) {
-                                $sr_no = 1;
-                                while ($row = $result->fetch_assoc()) {
-                                    echo "<tr>";
-                                    echo "<td>{$sr_no}</td>";
-                                    echo "<td>" . htmlspecialchars($row['name_add']) . "</td>";
-                                    echo "<td>" . htmlspecialchars($row['mobile_no']) . "</td>";
-                                    echo "<td>" . htmlspecialchars($row['comments']) . "</td>";
-                                    echo "<td>";
-                                    for ($i = 1; $i <= 5; $i++) {
-                                        echo $i <= $row['star_rating'] ? '<i class="fas fa-star star"></i>' : '<i class="far fa-star"></i>';
+                <!-- Desktop View -->
+                <div class="desktop-view">
+                    <div class="table-responsive">
+                        <table class="table table-striped" id="reviewsTable">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Sr. No</th>
+                                    <th>Name</th>
+                                    <th>Mobile No</th>
+                                    <th>Comment</th>
+                                    <th>Star Rating</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php
+                                if ($result->num_rows > 0) {
+                                    $sr_no = 1;
+                                    while ($row = $result->fetch_assoc()) {
+                                        echo "<tr>";
+                                        echo "<td>{$sr_no}</td>";
+                                        echo "<td>" . htmlspecialchars($row['name_add']) . "</td>";
+                                        echo "<td>" . htmlspecialchars($row['mobile_no']) . "</td>";
+                                        echo "<td>" . htmlspecialchars($row['comments']) . "</td>";
+                                        echo "<td>";
+                                        for ($i = 1; $i <= 5; $i++) {
+                                            echo $i <= $row['star_rating'] ? '<i class="fas fa-star star"></i>' : '<i class="far fa-star"></i>';
+                                        }
+                                        echo "</td>";
+                                        echo "</tr>";
+                                        $sr_no++;
                                     }
-                                    echo "</td>";
-                                    echo "</tr>";
-                                    $sr_no++;
+                                } else {
+                                    echo "<tr><td colspan='5' class='text-center'>No reviews found</td></tr>";
                                 }
-                            } else {
-                                echo "<tr><td colspan='5' class='text-center'>No reviews found</td></tr>";
+                                ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Mobile View -->
+                <div class="mobile-view">
+                    <?php
+                    if ($result->num_rows > 0) {
+                        $sr_no = 1;
+                        $result->data_seek(0); // Reset result pointer
+                        while ($row = $result->fetch_assoc()) {
+                            echo '<div class="review-card">';
+                            echo '<div class="review-header">';
+                            echo '<strong>#' . $sr_no . ' ' . htmlspecialchars($row['name_add']) . '</strong>';
+                            echo '<span>' . htmlspecialchars($row['mobile_no']) . '</span>';
+                            echo '</div>';
+                            echo '<div class="review-content">' . htmlspecialchars($row['comments']) . '</div>';
+                            echo '<div class="review-rating">';
+                            for ($i = 1; $i <= 5; $i++) {
+                                echo $i <= $row['star_rating'] ? '<i class="fas fa-star star"></i>' : '<i class="far fa-star"></i>';
                             }
-                            ?>
-                        </tbody>
-                    </table>
+                            echo '</div>';
+                            echo '</div>';
+                            $sr_no++;
+                        }
+                    } else {
+                        echo '<div class="text-center">No reviews found</div>';
+                    }
+                    ?>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Bootstrap & DataTables Scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.datatables.net/2.2.1/js/dataTables.min.js"></script>
 
     <script>
-        $(document).ready(function () {
+        $(document).ready(function() {
             $('#reviewsTable').DataTable({
                 responsive: true,
-                columnDefs: [
-                    { orderable: false, targets: [0, 1, 2] }
-                ]
+                columnDefs: [{
+                    orderable: false,
+                    targets: [0, 1, 2]
+                }],
+                language: {
+                    search: "Search reviews:"
+                }
             });
         });
     </script>

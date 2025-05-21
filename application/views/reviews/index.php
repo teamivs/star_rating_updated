@@ -35,7 +35,8 @@
                                 <?php if (!empty($reviews)) {
                                     $sr_no = 1;
                                     foreach ($reviews as $row) {
-                                        if ($row['star_rating'] <= 3) { // Show only 1-3 star reviews ?>
+                                        if ($row['star_rating'] <= 3) { // Show only 1-3 star reviews 
+                                ?>
                                             <tr>
                                                 <td data-order="<?= $sr_no; ?>"><?= $sr_no++; ?></td>
                                                 <td><?= htmlspecialchars($row['name_add']); ?></td>

@@ -9,16 +9,28 @@ class ChatGpt
 
     public function __construct()
     {
-        $CI =& get_instance();
-        $this->api_key = $CI->config->item('openai_api_key');
+        $CI = &get_instance();
 
-        // Load the company credentials model
+        // Load required files
+        $CI->load->config('chatgpt');
         $CI->load->model('Company_model');
-        $this->company_info = $CI->Company_model->get_company();
+
+        // Get API key from config
+        $this->api_key = $CI->config->item('openai_api_key');
 
         if (empty($this->api_key)) {
             log_message('error', 'OpenAI API key is not set in configuration');
+            throw new Exception('OpenAI API key is not configured');
         }
+
+        // Validate API key format
+        if (!preg_match('/^sk-proj-[a-zA-Z0-9\-_]{32,}$/', $this->api_key)) {
+            log_message('error', 'Invalid API key format. Expected format: sk-proj-{32+ characters}');
+            throw new Exception('Invalid API key format. Please use a valid sk-proj API key.');
+        }
+
+        // Get company info
+        $this->company_info = $CI->Company_model->get_company();
     }
 
     /**
@@ -32,36 +44,48 @@ class ChatGpt
      */
     public function generate_review($rating, $keywords = [], $company_name = null, $company_location = null)
     {
-        if (empty($this->api_key)) {
-            log_message('error', 'Cannot generate review: OpenAI API key is not set');
+        try {
+            log_message('debug', 'Starting review generation with rating: ' . $rating);
+            log_message('debug', 'Keywords: ' . json_encode($keywords));
+            log_message('debug', 'Company name: ' . $company_name);
+            log_message('debug', 'Company location: ' . $company_location);
+
+            if (empty($this->api_key)) {
+                log_message('error', 'API key is empty');
+                throw new Exception('OpenAI API key is not set');
+            }
+
+            // Validate rating
+            if (!is_numeric($rating) || $rating < 1 || $rating > 5) {
+                log_message('error', 'Invalid rating value: ' . $rating);
+                throw new Exception('Invalid rating value: ' . $rating);
+            }
+
+            // Prepare the prompt
+            $prompt = $this->prepare_prompt($rating, $keywords, $company_name, $company_location);
+            log_message('debug', 'Prepared prompt: ' . $prompt);
+
+            // Make API request
+            $response = $this->make_api_request($prompt);
+            if (!$response) {
+                log_message('error', 'No response received from API');
+                throw new Exception('Failed to get response from ChatGPT API');
+            }
+
+            // Extract review text from response
+            $review = $this->extract_review_from_response($response);
+            if (!$review) {
+                log_message('error', 'Failed to extract review from response');
+                throw new Exception('Failed to extract review from API response');
+            }
+
+            log_message('debug', 'Successfully generated review: ' . $review);
+            return $review;
+        } catch (Exception $e) {
+            log_message('error', 'Error in generate_review: ' . $e->getMessage());
+            log_message('error', 'Stack trace: ' . $e->getTraceAsString());
             return false;
         }
-
-        // Validate rating
-        if (!is_numeric($rating) || $rating < 1 || $rating > 5) {
-            log_message('error', 'Invalid rating value: ' . $rating);
-            return false;
-        }
-
-        // Prepare the prompt
-        $prompt = $this->prepare_prompt($rating, $keywords, $company_name, $company_location);
-
-        // Make API request
-        $response = $this->make_api_request($prompt);
-
-        if (!$response) {
-            return false;
-        }
-
-        // Extract review text from response
-        $review = $this->extract_review_from_response($response);
-
-        if (!$review) {
-            log_message('error', 'Failed to extract review from API response');
-            return false;
-        }
-
-        return $review;
     }
 
     /**
@@ -70,37 +94,31 @@ class ChatGpt
     private function prepare_prompt($rating, $keywords, $company_name = null, $company_location = null)
     {
         $sentiment = $this->get_sentiment_for_rating($rating);
-        $keyword_text = !empty($keywords) ? ' Include these keywords naturally in the review: ' . implode(', ', $keywords) : '';
+        $keyword_text = !empty($keywords) ? ' Include these keywords: ' . implode(', ', $keywords) : '';
 
         // Use provided company name or fallback to company info
-        $company_name = $company_name ?? (isset($this->company_info['company_name']) ? $this->company_info['company_name'] : 'the business');
+        $company_name = $company_name ?? 'the business';
 
         // Use provided company location or fallback to company info
-        $company_location = $company_location ?? (isset($this->company_info['company_location']) ? $this->company_info['company_location'] : '');
-        $location_text = !empty($company_location) ? " located in " . $company_location : '';
+        $location_text = !empty($company_location) ? " in " . $company_location : '';
 
-        return "Write a concise, authentic-sounding customer review for $company_name$location_text. 
-The review should be $sentiment in tone and feel like a genuine customer experience. 
-Make it specific and personal, mentioning concrete details about the experience.
-$keyword_text
-The review should be exactly 4-5 lines long, no more. Keep it brief but impactful.
-Avoid generic phrases and make it unique each time.";
+        return "Write a detailed, vast, authentic customer review for $company_name$location_text. The review should be $sentiment in tone.$keyword_text Keep it brief and natural.";
     }
-    //Please write polite and best experience review for <Companyname>, Locatd at Pune using keywords like website design, digital marketing and SEO Services
+
     /**
-     * Get sentiment description based on rating
+     * Get sentiment based on rating
      */
     private function get_sentiment_for_rating($rating)
     {
         switch ($rating) {
             case 5:
-                return 'very positive';
+                return 'extremely positive';
             case 4:
-                return 'positive';
+                return 'very positive';
             case 3:
-                return 'neutral';
+                return 'moderately positive';
             case 2:
-                return 'negative';
+                return 'somewhat negative';
             case 1:
                 return 'very negative';
             default:
@@ -118,19 +136,22 @@ Avoid generic phrases and make it unique each time.";
             'messages' => [
                 [
                     'role' => 'system',
-                    'content' => 'You are a helpful assistant that generates authentic-sounding business reviews. Each review should be unique and feel like it was written by a real customer.'
+                    'content' => 'You are a helpful assistant that generates authentic-sounding business reviews.'
                 ],
                 [
                     'role' => 'user',
                     'content' => $prompt
                 ]
             ],
-            'temperature' => 0.8,
-            'max_tokens' => 100,
+            'temperature' => 0.9,
+            'max_tokens' => 500,
             'top_p' => 0.9,
-            'frequency_penalty' => 0.7,
-            'presence_penalty' => 0.6
+            'frequency_penalty' => 0.5,
+            'presence_penalty' => 0.7
         ];
+
+        log_message('debug', 'Making ChatGPT API request with data: ' . json_encode($data));
+        log_message('debug', 'Using API key: ' . substr($this->api_key, 0, 8) . '...');
 
         $ch = curl_init($this->api_url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -140,17 +161,45 @@ Avoid generic phrases and make it unique each time.";
             'Content-Type: application/json',
             'Authorization: Bearer ' . $this->api_key
         ]);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
 
         $response = curl_exec($ch);
         $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
 
-        if ($http_code !== 200) {
-            log_message('error', 'ChatGPT API request failed with status ' . $http_code . ': ' . $response);
-            return false;
+        if (curl_errno($ch)) {
+            $error = curl_error($ch);
+            log_message('error', 'Curl error: ' . $error);
+            curl_close($ch);
+            throw new Exception('Connection error: ' . $error);
         }
 
-        return json_decode($response, true);
+        curl_close($ch);
+
+        log_message('debug', 'ChatGPT API response code: ' . $http_code);
+        log_message('debug', 'ChatGPT API response: ' . $response);
+
+        if ($http_code === 401) {
+            throw new Exception('Invalid API key. Please check your sk-proj API key.');
+        } elseif ($http_code === 429) {
+            $error_data = json_decode($response, true);
+            $error_message = isset($error_data['error']['message']) ? $error_data['error']['message'] : 'Rate limit exceeded';
+
+            if (strpos($error_message, 'quota') !== false) {
+                throw new Exception('API quota exceeded. Please check your OpenAI account billing and plan details at https://platform.openai.com/account/billing');
+            } else {
+                throw new Exception('Rate limit exceeded. Please try again in a few minutes.');
+            }
+        } elseif ($http_code !== 200) {
+            throw new Exception('API request failed with status ' . $http_code . ': ' . $response);
+        }
+
+        $decoded_response = json_decode($response, true);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new Exception('Failed to decode API response: ' . json_last_error_msg());
+        }
+
+        return $decoded_response;
     }
 
     /**
@@ -158,10 +207,15 @@ Avoid generic phrases and make it unique each time.";
      */
     private function extract_review_from_response($response)
     {
+        log_message('debug', 'Extracting review from response: ' . json_encode($response));
+
         if (!isset($response['choices'][0]['message']['content'])) {
-            return false;
+            log_message('error', 'Response missing content: ' . json_encode($response));
+            throw new Exception('Response missing content');
         }
 
-        return trim($response['choices'][0]['message']['content']);
+        $review = trim($response['choices'][0]['message']['content']);
+        log_message('debug', 'Extracted review: ' . $review);
+        return $review;
     }
 }

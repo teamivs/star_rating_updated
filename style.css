@@ -3,12 +3,17 @@
 * {
     margin: 0;
     padding: 0;
+    box-sizing: border-box;
     /* font-family: roboto; */
     /* font-family: "Poppins", serif; */
 }
 
+/* Base styles */
 .container {
     background-color: #aaa;
+    width: 100%;
+    padding: 0 15px;
+    margin: 0 auto;
 }
 
 /* body {
@@ -16,12 +21,12 @@
 } */
 
 .cont {
-    width: 93%;
+    width: 100%;
     max-width: 650px;
     /* height: 448px; */
     text-align: center;
-    margin: 4% auto;
-    padding: 30px 0;
+    margin: 2% auto;
+    padding: 20px 15px;
     /* background: #8d8d8d; */
     color: #EEE;
     border-radius: 15px;
@@ -32,12 +37,14 @@
 
 .card {
     border-radius: 15px !important;
+    width: 100%;
 }
 
 .stars {
     display: flex;
     justify-content: center;
     gap: 10px;
+    flex-wrap: wrap;
 }
 
 input.star {
@@ -46,13 +53,18 @@ input.star {
 
 label.star {
     float: right;
-    padding: 10px;
-    font-size: 28px;
+    padding: 8px;
+    font-size: 24px;
     color: #444;
     transition: all .2s;
 }
 
-
+@media (max-width: 576px) {
+    label.star {
+        padding: 6px;
+        font-size: 20px;
+    }
+}
 
 input.star:checked~label.star:after {
     content: '\f005';
@@ -72,14 +84,14 @@ label.star:after {
     gap: 10px;
     width: 100%;
     transition: all .25s;
-    padding-bottom: 30px;
+    padding-bottom: 20px;
 }
 
 textarea.review {
     /* background: #222; */
     /* border: none; */
-    margin-top: 40px;
-    width: 80%;
+    margin-top: 20px;
+    width: 100%;
     max-width: 100%;
     height: 100px;
     padding: 10px;
@@ -88,10 +100,9 @@ textarea.review {
     border-radius: 6px;
 }
 
-
 .rev-box .review-input {
-    margin-top: 25px;
-    width: 80%;
+    margin-top: 15px;
+    width: 100%;
     max-width: 100%;
     height: 50px;
     padding: 10px;
@@ -99,22 +110,15 @@ textarea.review {
     border-radius: 6px;
 }
 
-
-
-
 .rev-box .review-input:focus {
     /* outline: none; */
     /* border: 1px solid #FD4; */
     border: #111 1px solid;
 }
 
-
-
-
-
 .rev-box .review-input-pass {
-    margin-top: 25px;
-    width: 72%;
+    margin-top: 15px;
+    width: 100%;
     max-width: 100%;
     height: 50px;
     padding: 10px;
@@ -123,20 +127,19 @@ textarea.review {
     border-radius: 6px 0 0 6px !important;
 }
 
-
 .rev-box .review-input-pass:focus {
     border: #111 1px solid;
 }
 
+.input-group {
+    width: 100%;
+}
 
 .input-group-text {
-    padding: 16px !important;
-    padding-top: 16.5px !important;
+    padding: 12px !important;
     border-radius: 0 6px 6px 0 !important;
     background-color: #E8F0FE !important;
 }
-
-
 
 label.review {
     display: block;
@@ -151,8 +154,16 @@ label.review {
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s, transform 0.2s;
-    width: 35%;
+    width: 100%;
+    max-width: 200px;
     margin-top: 20px;
+}
+
+@media (max-width: 576px) {
+    .save-btn {
+        width: 100%;
+        max-width: none;
+    }
 }
 
 .save-btn:hover {
@@ -175,13 +186,18 @@ label.review {
     justify-content: center;
     align-items: center;
     gap: 10px;
+    flex-wrap: wrap;
 }
-
-
 
 .title h1 {
     margin: 0;
-    /* Removes default margin from the <h1> */
+    font-size: 1.5rem;
+}
+
+@media (max-width: 576px) {
+    .title h1 {
+        font-size: 1.2rem;
+    }
 }
 
 .add-label-title {
@@ -190,17 +206,21 @@ label.review {
 }
 
 .image_box_add {
-    margin-right: 20px;
+    margin-right: 10px;
 }
 
 .image_box_add img {
-    width: 40px;
-    height: 40px;
+    width: 30px;
+    height: 30px;
     border-radius: 50%;
 }
 
-
-
+@media (max-width: 576px) {
+    .image_box_add img {
+        width: 25px;
+        height: 25px;
+    }
+}
 
 #loader {
     display: none;
@@ -226,27 +246,107 @@ label.review {
     }
 }
 
-
-
-
-
-
-
-
-
-
 /* start css for table  */
 
 .cont_show_reviews {
     width: 100%;
-    max-width: 1000px;
+    max-width: 1200px;
     text-align: center;
-    margin: 1% auto;
-    padding: 30px 20px;
+    margin: 0 auto;
+    padding: 20px;
     color: #EEE;
     border-radius: 15px;
     border: thin solid #444;
     overflow: hidden;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
     color: #000;
+}
+
+@media (max-width: 1200px) {
+    .cont_show_reviews {
+        padding: 15px;
+    }
+}
+
+@media (max-width: 992px) {
+    .cont {
+        margin: 4% auto;
+    }
+    
+    .title h1 {
+        font-size: 1.3rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .cont {
+        margin: 6% auto;
+        padding: 15px 10px;
+    }
+    
+    .title h1 {
+        font-size: 1.2rem;
+    }
+    
+    label.star {
+        padding: 6px;
+        font-size: 20px;
+    }
+    
+    .save-btn {
+        width: 100%;
+        max-width: none;
+    }
+    
+    .image_box_add img {
+        width: 25px;
+        height: 25px;
+    }
+    
+    .rev-box .review-input,
+    .rev-box .review-input-pass {
+        height: 45px;
+        font-size: 14px;
+    }
+    
+    textarea.review {
+        height: 80px;
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 576px) {
+    .cont {
+        margin: 8% auto;
+        padding: 12px 8px;
+    }
+    
+    .title h1 {
+        font-size: 1.1rem;
+    }
+    
+    label.star {
+        padding: 4px;
+        font-size: 18px;
+    }
+    
+    .image_box_add img {
+        width: 22px;
+        height: 22px;
+    }
+    
+    .rev-box .review-input,
+    .rev-box .review-input-pass {
+        height: 40px;
+        font-size: 13px;
+    }
+    
+    textarea.review {
+        height: 70px;
+        font-size: 13px;
+    }
+    
+    .input-group-text {
+        padding: 8px !important;
+    }
 }

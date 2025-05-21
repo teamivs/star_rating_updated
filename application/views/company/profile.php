@@ -6,8 +6,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Company Profile</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
     <style>
@@ -34,6 +32,11 @@
             padding: 40px;
             background: #fff;
             box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+            margin: 0;
+        }
+
+        .card-body {
+            padding: 1.25rem;
         }
 
         .company-logo {
@@ -83,7 +86,38 @@
             text-decoration: underline;
         }
 
-        @media (max-width: 768px) {
+        .table-responsive {
+            margin: 0;
+            padding: 0;
+        }
+
+        .table {
+            margin-bottom: 0;
+        }
+
+        .table th {
+            white-space: nowrap;
+            min-width: 150px;
+            padding: 1rem;
+        }
+
+        .table td {
+            word-break: break-word;
+            padding: 1rem;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .action-buttons .btn {
+            min-width: 120px;
+        }
+
+        @media (max-width: 991.98px) {
             .content-wrapper {
                 margin-left: 0;
                 width: 100%;
@@ -95,6 +129,81 @@
 
             .card {
                 padding: 20px;
+            }
+
+            .company-logo {
+                width: 100px;
+                height: 100px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 15px;
+            }
+
+            .card {
+                padding: 15px;
+            }
+
+            .table th {
+                min-width: 120px;
+                padding: 0.75rem;
+            }
+
+            .table td {
+                padding: 0.75rem;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .action-buttons .btn {
+                width: 100%;
+                margin: 5px 0;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .main-content {
+                padding: 10px;
+            }
+
+            .card {
+                padding: 15px;
+                border-radius: 12px;
+            }
+
+            .card-body {
+                padding: 1rem;
+            }
+
+            .company-logo {
+                width: 80px;
+                height: 80px;
+            }
+
+            .table th,
+            .table td {
+                padding: 0.5rem;
+                font-size: 14px;
+            }
+
+            .card-header {
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 1rem;
+            }
+
+            .card-tools {
+                margin-top: 10px;
+                width: 100%;
+            }
+
+            .card-tools .btn {
+                width: 100%;
             }
         }
     </style>
@@ -150,35 +259,41 @@
                                                     <?php endif; ?>
                                                 </div>
 
-                                                <table class="table table-bordered table-striped">
-                                                    <tbody>
-                                                        <tr>
-                                                            <th style="width: 200px;">Company Name</th>
-                                                            <td><?= htmlspecialchars($company['company_name']) ?></td>
-                                                        </tr>
-                                                        <tr>
-                                                            <th>Company URL</th>
-                                                            <td>
-                                                                <a href="<?= htmlspecialchars($company['company_url']) ?>"
-                                                                    target="_blank">
-                                                                    <?= htmlspecialchars($company['company_url']) ?>
-                                                                </a>
-                                                            </td>
-                                                        </tr>
-                                                        <?php if (!empty($company['company_location'])): ?>
+                                                <div class="table-responsive">
+                                                    <table class="table">
+                                                        <tbody>
                                                             <tr>
-                                                                <th>Location</th>
-                                                                <td><?= htmlspecialchars($company['company_location']) ?></td>
+                                                                <th>Company Name</th>
+                                                                <td><?= htmlspecialchars($company['company_name']) ?></td>
                                                             </tr>
-                                                        <?php endif; ?>
-                                                    </tbody>
-                                                </table>
+                                                            <tr>
+                                                                <th>Company URL</th>
+                                                                <td>
+                                                                    <a href="<?= htmlspecialchars($company['company_url']) ?>"
+                                                                        target="_blank">
+                                                                        <?= htmlspecialchars($company['company_url']) ?>
+                                                                    </a>
+                                                                </td>
+                                                            </tr>
+                                                            <?php if (!empty($company['company_location'])): ?>
+                                                                <tr>
+                                                                    <th>Location</th>
+                                                                    <td><?= htmlspecialchars($company['company_location']) ?></td>
+                                                                </tr>
+                                                            <?php endif; ?>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
                                             <?php endif; ?>
 
-                                            <div class="text-center mt-4">
+                                            <div class="action-buttons mt-4">
                                                 <a href="<?= base_url($this->session->userdata('user_id') . '/1') ?>"
                                                     class="btn btn-primary">
-                                                    <i class="fas fa-star"></i> Leave a Review
+                                                    <i class="fas fa-robot"></i> GPT Review
+                                                </a>
+                                                <a href="<?= base_url($this->session->userdata('user_id') . '/2') ?>"
+                                                    class="btn btn-success">
+                                                    <i class="fas fa-star"></i> Normal Review
                                                 </a>
                                             </div>
                                         <?php else: ?>

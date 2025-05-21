@@ -30,6 +30,7 @@
             background: #f8f9fa;
             border-radius: 10px;
             border-left: 4px solid #28a745;
+            white-space: pre-wrap;
         }
 
         .btn-copy {
@@ -77,6 +78,15 @@
             object-fit: contain;
             margin-bottom: 15px;
         }
+
+        .error-message {
+            color: #dc3545;
+            padding: 15px;
+            margin: 20px 0;
+            border: 1px solid #dc3545;
+            border-radius: 5px;
+            background-color: #f8d7da;
+        }
     </style>
 </head>
 
@@ -84,21 +94,28 @@
     <div class="review-container">
         <div class="company-info">
             <img src="<?= base_url($company_logo) ?>" alt="Company Logo" class="company-logo">
-            <h3><?= $company_name ?></h3>
+            <h3><?= htmlspecialchars($company_name) ?></h3>
         </div>
 
-        <div class="review-text" id="reviewText">
-            <?= $ai_review ?>
-        </div>
+        <?php if (empty($ai_review)): ?>
+            <div class="error-message">
+                <i class="fas fa-exclamation-circle"></i>
+                Failed to generate review. Please try again.
+            </div>
+        <?php else: ?>
+            <div class="review-text" id="reviewText">
+                <?= nl2br(htmlspecialchars($ai_review)) ?>
+            </div>
 
-        <div class="button-container">
-            <button class="btn-copy" onclick="copyReview()">
-                <i class="fas fa-copy"></i> Copy Review
-            </button>
-            <button class="btn-next" onclick="proceedToGoogle()">
-                Next <i class="fas fa-arrow-right"></i>
-            </button>
-        </div>
+            <div class="button-container">
+                <button class="btn-copy" onclick="copyReview()">
+                    <i class="fas fa-copy"></i> Copy Review
+                </button>
+                <button class="btn-next" onclick="proceedToGoogle()">
+                    Next <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        <?php endif; ?>
     </div>
 
     <script>
@@ -112,10 +129,12 @@
         }
 
         function proceedToGoogle() {
-            const reviewText = document.getElementById('reviewText').innerText;
             const googleUrl = '<?= $google_url ?>';
-            // You can add any additional parameters needed for Google review
-            window.location.href = googleUrl;
+            if (googleUrl) {
+                window.location.href = googleUrl;
+            } else {
+                alert('Google review URL not configured for this company.');
+            }
         }
     </script>
 </body>
