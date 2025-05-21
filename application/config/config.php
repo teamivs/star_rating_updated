@@ -536,4 +536,4 @@ $config['proxy_ips'] = '';
 | OpenAI API Configuration
 |--------------------------------------------------------------------------
 */
-$config['openai_api_key'] = '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';
+$config['openai_api_key'] = getenv('OPENAI_API_KEY');

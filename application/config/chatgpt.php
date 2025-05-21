@@ -18,7 +18,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 */
 
 // Your OpenAI API key - Replace this with your actual sk-proj API key
-$config['openai_api_key'] = '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';
+$config['openai_api_key'] = getenv('OPENAI_API_KEY');
 
 if (empty($config['openai_api_key']) || $config['openai_api_key'] === 'sk-proj-YOUR_API_KEY_HERE') {
     log_message('error', 'OpenAI API key is not set or is using the default value');

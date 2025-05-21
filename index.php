@@ -114,6 +114,9 @@ switch (ENVIRONMENT)
  *
  * NO TRAILING SLASH!
  */
+	require_once(__DIR__ . '/application/helpers/env_helper.php');
+	load_env();
+
 	$application_folder = 'application';
 
 /*
