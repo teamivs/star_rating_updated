@@ -1,5 +1,5 @@
 .DS_Store
-
+.env
 application/cache/*
 !application/cache/index.html
 
@@ -21,7 +21,7 @@ user_guide_src/cilexer/pycilexer.egg-info/*
 #-------------------------
 /nbproject/
 .idea/*
-.env
+
 ## Sublime Text cache files
 *.tmlanguage.cache
 *.tmPreferences.cache
